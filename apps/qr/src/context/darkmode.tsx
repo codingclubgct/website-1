@@ -8,7 +8,7 @@ export const DarkModeContext = createContext({
     toggleDarkMode: () => { },
 });
 
-export function DarkModeProvider({ children }: { children: ReactNode }) {
+export function DarkModeProvider({ children }: { children: ReactNode }): ReactNode {
     const [darkMode, setDarkMode] = useLocalStorageState("darkMode", {
         defaultValue: false
     });

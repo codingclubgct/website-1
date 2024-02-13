@@ -1,0 +1,23 @@
+p,
+a,
+span {
+    @apply my-0 py-0
+}
+
+a {
+    @apply text-blue
+}
+
+i {
+    @apply text-inherit
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* For IE, Edge and Firefox */
+.scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}

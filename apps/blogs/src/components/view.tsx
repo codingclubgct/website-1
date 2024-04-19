@@ -54,13 +54,13 @@ const howTo = [
 export default function View({ tree, children }: { tree: FolderNode | null, children: ReactNode }) {
     const { data: session } = useSession();
     const { open, toggleOpen } = useContext(OpenContext)
-    const isMobile = useMediaQuery('(max-width: 640px)')
+    const isMedium = useMediaQuery('(max-width: 768px)')
 
     return <div className="w-full">
         <div className='flex flex-col md:flex-row justify-center relative w-full'>
-            <div style={{ height: (open || !isMobile) ? "100dvh" : "4rem" }} className="w-full md:w-[300px] mr-4 flex md:sticky top-0 left-0 overflow-y-scroll scrollbar-hide">
+            <div style={{ height: (open || !isMedium) ? "100dvh" : "4rem" }} className="w-full md:w-[300px] mr-4 flex md:sticky top-0 left-0 overflow-y-scroll scrollbar-hide">
                 <div className="flex flex-col w-full md:w-[300px] h-full">
-                    <div style={{ height: (open || !isMobile) ? "calc(100% - 10rem)" : undefined }} className='w-full overflow-y-scroll scrollbar-hide p-4 flex flex-col gap-4'>
+                    <div style={{ height: (open || !isMedium) ? "calc(100% - 10rem)" : undefined }} className='w-full overflow-y-scroll scrollbar-hide p-4 flex flex-col gap-4'>
                         <div className='flex items-center justify-between'>
                             <div className="flex gap-4">
                                 <FontAwesomeIcon icon={open ? faClose : faBars} className="text-text cursor-pointer md:hidden" onClick={toggleOpen} />
@@ -71,13 +71,12 @@ export default function View({ tree, children }: { tree: FolderNode | null, chil
                                 <Link className="no-underline" href="/about">About</Link>
                             </div>
                         </div>
-                        {(open || !isMobile) && <>
+                        {(open || !isMedium) && <>
                             <Divider />
-                            <p> Directory </p>
                             <Tray tree={tree} pl={6} />
                         </>}
                     </div>
-                    {(open || !isMobile) && <div className="flex h-[10rem] items-center p-4 justify-end">
+                    {(open || !isMedium) && <div className="flex h-[10rem] items-center p-4 justify-end">
                         {session?.user ? <div className="flex flex-col gap-4 w-full justify-center items-center">
                             <img className="h-[5rem] object-contain rounded-full" src={session.user.image!} alt="" />
                             <p> Logged in as <span className="text-green"> {session.user.name} </span> </p>
@@ -88,13 +87,13 @@ export default function View({ tree, children }: { tree: FolderNode | null, chil
                     <Divider orientation="vertical" />
                 </div>
             </div>
-            {(!open || !isMobile) && <div className='container md:w-[calc(100%-300px)]'>
+            {(!open || !isMedium) && <div className='container md:w-[calc(100%-300px)]'>
                 {children}
             </div>}
         </div>
-        {(!open || !isMobile) && <>
+        {(!open || !isMedium) && <>
             <Divider />
-            <div className="p-4 mx-auto container flex flex-col h-auto md:flex-row justify-evenly gap-8 md:gap-0 py-8" id="#about">
+            <div className="px-4 mx-auto container flex flex-col md:flex-row justify-evenly gap-8 md:gap-0 py-8" id="#about">
                 <div className="flex flex-col justify-center">
                     <p> Blogs from <span className="text-yellow text-sm"> Coding Club GCT </span> </p>
                     <p className="text-subtext0 text-sm"> Ideas Unleashed</p>

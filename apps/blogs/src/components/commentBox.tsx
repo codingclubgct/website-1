@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import Markdown from 'react-markdown';
 import TextareaAutosize from 'react-textarea-autosize';
 import ReactReactions from "./reactReactions";
+import { githubPat } from "@/lib/constants";
 
 export default function CommentBox({ slug }: { slug: string }) {
     const { data: session } = useSession() as { data: Session & { access_token: string, id: number } | null };
@@ -57,7 +58,7 @@ export default function CommentBox({ slug }: { slug: string }) {
         (async () => {
             const resp: Comment[] = await fetch(`https://api.github.com/repos/coding-club-gct/blogs/${slug}/comments`, {
                 headers: {
-                    "Authorization": `Bearer ${process.env.NEXT_PUBLIC_GITHUB_PAT}`
+                    "Authorization": `Bearer ${githubPat}`
                 }
             }).then(res => res.json())
             setComments(resp)

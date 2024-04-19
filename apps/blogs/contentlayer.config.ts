@@ -3,12 +3,14 @@ import GithubSlugger from "github-slugger"
 import rehypeSlug from "rehype-slug"
 import { getTimeString } from './src/lib/getTimeString'
 import { Issue } from './src/types/issues'
+import { Blog as BlogType } from 'contentlayer/generated'
+import { githubPat } from './src/lib/constants'
 
 async function getProfileFromUsername(username: string) {
     const profile = await fetch(`https://api.github.com/users/${username}`, {
         method: "GET",
         headers: {
-            "Authorization": `token ${process.env.NEXT_PUBLIC_GITHUB_PAT!}`,
+            "Authorization": `token ${githubPat}`,
             "Content-Type": "application/json"
         },
         cache: "force-cache"
@@ -20,7 +22,7 @@ async function getIssueNumber(title: string) {
     const issues: Issue[] = await fetch("https://api.github.com/repos/coding-club-gct/blogs/issues", {
         headers: {
             "Accept": "application/vnd.github+json",
-            "Authorization": `Bearer ${process.env.NEXT_PUBLIC_GITHUB_PAT}`,
+            "Authorization": `Bearer ${githubPat}`,
         },
     }).then(res => res.json());
     const found = issues.find(issue => issue.title === title)
@@ -28,7 +30,7 @@ async function getIssueNumber(title: string) {
         const { id } = await fetch("https://api.github.com/user", {
             method: "GET",
             headers: {
-                "Authorization": `token ${process.env.NEXT_PUBLIC_GITHUB_PAT!}`,
+                "Authorization": `token ${githubPat}`,
                 "Content-Type": "application/json"
             }
         }).then(res => res.json())
@@ -37,7 +39,7 @@ async function getIssueNumber(title: string) {
                 method: "POST",
                 headers: {
                     "Accept": "application/vnd.github+json",
-                    "Authorization": `Bearer ${process.env.NEXT_PUBLIC_GITHUB_PAT}`
+                    "Authorization": `Bearer ${githubPat}`
                 }, body: JSON.stringify({
                     title,
                     body: "Using this space as comment section for the blog post of above pathname",
@@ -70,7 +72,7 @@ async function getGithubDataforBlog(pathname: string): Promise<GithubDataForBlog
     const resp = await fetch(apiUrl, {
         method: "GET",
         headers: {
-            "Authorization": `token ${process.env.NEXT_PUBLIC_GITHUB_PAT!}`,
+            "Authorization": `token ${githubPat}`,
             "X-GitHub-Api-Version": "2022-11-28"
         },
         cache: "force-cache"
@@ -118,7 +120,7 @@ export const Blog = defineDocumentType(() => ({
         },
         headings: {
             type: "json",
-            resolve: async (doc) => {
+            resolve: async (doc: BlogType) => {
                 const regXHeader = /\n(?<flag>#{1,6})\s+(?<content>.+)/g;
                 const slugger = new GithubSlugger()
                 const headings = Array.from(doc.body.raw.matchAll(regXHeader)).map(

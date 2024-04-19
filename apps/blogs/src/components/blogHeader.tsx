@@ -1,12 +1,13 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Divider } from "@mui/material"
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+import { githubPat } from "@/lib/constants";
 
 async function getProfileFromUsername(username: string) {
     const profile = await fetch(`https://api.github.com/users/${username}`, {
         method: "GET",
         headers: {
-            "Authorization": `token ${process.env.NEXT_PUBLIC_GITHUB_PAT!}`,
+            "Authorization": `token ${githubPat}`,
             "Content-Type": "application/json"
         },
         cache: "force-cache"
@@ -42,7 +43,7 @@ export const BlogHeader = async ({ pathname, hideAuthor }: { pathname: string, h
     const resp = await fetch(apiUrl, {
         method: "GET",
         headers: {
-            "Authorization": `token ${process.env.NEXT_PUBLIC_GITHUB_PAT!}`,
+            "Authorization": `token ${githubPat}`,
             "X-GitHub-Api-Version": "2022-11-28"
         },
         cache: "force-cache"

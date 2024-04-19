@@ -1,6 +1,7 @@
 "use client"
 
 import { CatppuccinContext } from "@/context/catppuccin"
+import { githubPat } from "@/lib/constants"
 import { Issue, Reaction } from "@/types/issues"
 import { faHandsClapping } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -83,7 +84,7 @@ export default function ReactReactions({ slug }: { slug: string }) {
             await fetch(`https://api.github.com/repos/coding-club-gct/blogs/${slug}/reactions/${found.id}`, {
                 method: "DELETE",
                 headers: {
-                    "Authorization": `Bearer ${process.env.NEXT_PUBLIC_GITHUB_PAT}`
+                    "Authorization": `Bearer ${githubPat}`
                 }
             }).then(() => {
                 setReactions(prev => prev ? ({ ...prev, [content]: prev[content] - 1, total_count: prev.total_count - 1 }) : prev)
@@ -94,7 +95,7 @@ export default function ReactReactions({ slug }: { slug: string }) {
             const resp: Reaction = await fetch(`https://api.github.com/repos/coding-club-gct/blogs/${slug}/reactions`, {
                 method: "POST",
                 headers: {
-                    "Authorization": `Bearer ${process.env.NEXT_PUBLIC_GITHUB_PAT}`
+                    "Authorization": `Bearer ${githubPat}`
                 }, body: JSON.stringify({
                     content
                 })
@@ -111,12 +112,12 @@ export default function ReactReactions({ slug }: { slug: string }) {
         (async function () {
             const resp: Issue = await fetch(`https://api.github.com/repos/coding-club-gct/blogs/${slug}`, {
                 headers: {
-                    "Authorization": `Bearer ${process.env.NEXT_PUBLIC_GITHUB_PAT}`
+                    "Authorization": `Bearer ${githubPat}`
                 }
             }).then(res => res.json())
             const githubReactionsData: Reaction[] = await fetch(resp.reactions.url, {
                 headers: {
-                    "Authorization": `Bearer ${process.env.NEXT_PUBLIC_GITHUB_PAT}`
+                    "Authorization": `Bearer ${githubPat}`
                 }
             }).then(res => res.json())
             setReactionsData(githubReactionsData)

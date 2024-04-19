@@ -1,5 +1,6 @@
 "use client";
 
+import { githubPat } from "@/lib/constants";
 import { ReactNode, createContext, useEffect, useState } from "react";
 
 interface IssuesContextProps {
@@ -23,7 +24,7 @@ export function IssuesProvider({ children }: { children: ReactNode }) {
             fetch("https://api.github.com/repos/coding-club-gct/blogs/issues", {
                 headers: {
                     "Accept": "application/vnd.github+json",
-                    "Authorization": `Bearer ${process.env.NEXT_PUBLIC_GITHUB_PAT}`,
+                    "Authorization": `Bearer ${githubPat}`,
                 },
             }).then(res => {
                 setStatus(res.status)

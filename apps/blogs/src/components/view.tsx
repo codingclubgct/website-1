@@ -73,6 +73,7 @@ export default function View({ tree, children }: { tree: FolderNode | null, chil
                         </div>
                         {(open || !isMobile) && <>
                             <Divider />
+                            <p> Directory </p>
                             <Tray tree={tree} pl={6} />
                         </>}
                     </div>

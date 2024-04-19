@@ -7,10 +7,25 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { usePathname, useRouter } from "next/navigation";
 import { useContext, useState } from "react";
 
+const childPresent = (path: string, tree?: FolderNode | null) => {
+    if(!tree) return false
+    if (tree.path === path) {
+        return true;
+    }
+    if (tree.children) {
+        for (const child of tree.children) {
+            if (childPresent(path, child)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 export function Tray({ tree, pl }: { tree?: FolderNode | null, pl: number }) {
     const router = useRouter()
     const pathname = usePathname()
-    const [clicked, setClicked] = useState(tree?.name === "root" ? true : false);
+    const [clicked, setClicked] = useState(tree?.name === "root" ? true : childPresent(pathname, tree));
     const { setClose } = useContext(OpenContext)
 
     if (!tree) {

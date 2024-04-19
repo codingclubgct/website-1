@@ -14,7 +14,7 @@ export const authOptions: NextAuthOptions = {
             clientSecret: githubSecret!,
             authorization: {
                 params: {
-                    scope: "read:user user:email repo"
+                    scope: "read:user user:email public_repo"
                 }
             }
         }),

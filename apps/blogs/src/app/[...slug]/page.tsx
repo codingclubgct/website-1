@@ -68,7 +68,9 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
                         </div>
                     </div>
                 </div> : <></>}
-                <MDXContent />
+                <div>
+                    <MDXContent />
+                </div>
                 <CommentBox slug={`issues/${issueNumber}`} />
             </div>
             <div className="hidden md:flex gap-4">

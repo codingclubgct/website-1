@@ -67,7 +67,7 @@ export type GithubDataForBlog = {
 }
 
 async function getGithubDataforBlog(pathname: string): Promise<GithubDataForBlog | undefined> {
-    const filePathName = `src/blogs/${pathname}.mdx`
+    const filePathName = `apps/blogs/src/blogs/${pathname}.mdx`
     const apiUrl = `https://api.github.com/repos/${owner}/${repo}/commits?path=${filePathName}`
     const resp = await fetch(apiUrl, {
         method: "GET",

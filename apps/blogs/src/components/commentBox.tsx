@@ -58,7 +58,7 @@ export default function CommentBox({ slug }: { slug: string }) {
     }, [session])
 
     return <div className="flex flex-col gap-4 mb-12">
-        <Divider />
+        <Divider className="my-12" />
         <div>
             <p className="text-xl font-medium"> Comment Section </p>
             <a href={`https://github.com/${owner}/${repo}/${slug}`} target="_blank" className="text-blue no-underline text-sm"> {slug} </a>

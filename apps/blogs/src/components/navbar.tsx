@@ -28,9 +28,9 @@ export function Tray({ tree, pl }: { tree?: FolderNode | null, pl: number }) {
         const isDir = Boolean(node.children?.length)
         return (
             <div key={node.path}>
-                <div onClick={handleItemClick} style={{ paddingLeft: pl }} className="flex items-center text-overlay2 hover:text-text gap-2 hover:bg-crust p-1 cursor-pointer mr-4">
+                <div onClick={handleItemClick} style={{ paddingLeft: pl }} className="flex items-center text-overlay2 hover:text-text gap-2 hover:bg-crust p-2 cursor-pointer mr-4">
                     {isDir ? clicked ? <FontAwesomeIcon icon={faFolderOpen} className="text-mauve" /> : <FontAwesomeIcon icon={faFolderClosed} /> : <div className="w-2 h-2 rounded-full bg-mauve"></div>}
-                    <p> {node.name === "app" ? "home" : node.name.replaceAll("-", " ")} </p>
+                    <p className='capitalize'> {node.name === "app" ? "home" : node.name.replaceAll("-", " ")} </p>
                 </div>
                 {clicked && node.children?.map((child, index) => (
                     <Tray key={index} tree={child} pl={pl + 12} />

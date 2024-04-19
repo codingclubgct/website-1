@@ -11,7 +11,6 @@ import { useEffect, useState } from "react";
 import Markdown from 'react-markdown';
 import TextareaAutosize from 'react-textarea-autosize';
 import ReactReactions from "./reactReactions";
-import { getIssueNumber } from "@/lib/helpers";
 import { owner, repo } from "@/lib/constants";
 
 export default function CommentBox({ slug }: { slug: string }) {

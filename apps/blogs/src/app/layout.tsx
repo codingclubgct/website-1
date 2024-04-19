@@ -5,7 +5,7 @@ import { IssuesProvider } from "@/context/issues";
 import { ThemeProvider } from "@/context/mui";
 import { OpenProvider } from "@/context/open";
 import { normalizePaths } from "@/lib/normalize-path";
-import View from "@/views/view";
+import View from "@/components/view";
 import { allBlogs } from "contentlayer/generated";
 import "./global.css";
 import "./tailwind.css";

@@ -4,7 +4,7 @@ import rehypeSlug from "rehype-slug"
 import { getTimeString } from './src/lib/getTimeString'
 import { Issue } from './src/types/issues'
 import { Blog as BlogType } from 'contentlayer/generated'
-import { githubPat } from './src/lib/constants'
+import { githubPat, owner, repo } from './src/lib/constants'
 
 async function getProfileFromUsername(username: string) {
     const profile = await fetch(`https://api.github.com/users/${username}`, {
@@ -19,7 +19,7 @@ async function getProfileFromUsername(username: string) {
 }
 
 async function getIssueNumber(title: string) {
-    const issues: Issue[] = await fetch("https://api.github.com/repos/coding-club-gct/blogs/issues", {
+    const issues: Issue[] = await fetch(`https://api.github.com/repos/${owner}/${repo}/issues`, {
         headers: {
             "Accept": "application/vnd.github+json",
             "Authorization": `Bearer ${githubPat}`,
@@ -34,8 +34,8 @@ async function getIssueNumber(title: string) {
                 "Content-Type": "application/json"
             }
         }).then(res => res.json())
-        if (id === 116782181) {
-            const resp: Issue = await fetch("https://api.github.com/repos/coding-club-gct/blogs/issues", {
+        if (id === 80976002) { // User id of Joel Samuel
+            const resp: Issue = await fetch(`https://api.github.com/repos/${owner}/${repo}/issues`, {
                 method: "POST",
                 headers: {
                     "Accept": "application/vnd.github+json",
@@ -68,7 +68,7 @@ export type GithubDataForBlog = {
 
 async function getGithubDataforBlog(pathname: string): Promise<GithubDataForBlog | undefined> {
     const filePathName = `src/blogs/${pathname}.mdx`
-    const apiUrl = `https://api.github.com/repos/coding-club-gct/blogs/commits?path=${filePathName}`
+    const apiUrl = `https://api.github.com/repos/${owner}/${repo}/commits?path=${filePathName}`
     const resp = await fetch(apiUrl, {
         method: "GET",
         headers: {

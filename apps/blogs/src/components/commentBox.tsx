@@ -11,7 +11,8 @@ import { useEffect, useState } from "react";
 import Markdown from 'react-markdown';
 import TextareaAutosize from 'react-textarea-autosize';
 import ReactReactions from "./reactReactions";
-import { githubPat } from "@/lib/constants";
+import { getIssueNumber } from "@/lib/helpers";
+import { owner, repo } from "@/lib/constants";
 
 export default function CommentBox({ slug }: { slug: string }) {
     const { data: session } = useSession() as { data: Session & { access_token: string, id: number } | null };
@@ -20,34 +21,29 @@ export default function CommentBox({ slug }: { slug: string }) {
     const [preview, setPreview] = useState(false)
     const [newComment, setNewComment] = useState("")
     const [newCommentPreview, setNewCommentPreview] = useState(false)
+
     const handleUpdate = async (comment: Comment) => {
-        fetch(`https://api.github.com/repos/coding-club-gct/blogs/issues/comments/${comment.id}`, {
+        fetch("/api/comments", {
             method: "PATCH",
-            headers: {
-                "Authorization": `Bearer ${session?.access_token}`
-            }, body: JSON.stringify({ body: comment.body })
+            body: JSON.stringify({ body: comment.body, id: comment.id, access_token: session?.access_token })
         }).then(() => {
             setComments(prev => prev.map(p => p.id === comment.id ? ({ ...p, body: comment.body }) : p))
             setCurrent(null)
         })
     }
     const handleDelete = async (comment: Comment) => {
-        fetch(`https://api.github.com/repos/coding-club-gct/blogs/issues/comments/${comment.id}`, {
+        fetch("/api/comments", {
             method: "DELETE",
-            headers: {
-                "Authorization": `Bearer ${session?.access_token}`
-            }
+            body: JSON.stringify({ id: comment.id, access_token: session?.access_token })
         }).then(() => {
             setComments(comments => comments.filter(({ id }) => id !== comment.id))
         })
     }
     const postNewComment = async () => {
         if (!newComment) return
-        fetch(`https://api.github.com/repos/coding-club-gct/blogs/${slug}/comments`, {
+        fetch("/api/comments", {
             method: "POST",
-            headers: {
-                "Authorization": `Bearer ${session?.access_token}`
-            }, body: JSON.stringify({ body: newComment })
+            body: JSON.stringify({ body: newComment, access_token: session?.access_token, slug })
         }).then(res => res.json()).then((json: Comment) => {
             setComments(prev => [...prev, json])
             setNewComment("")
@@ -56,11 +52,7 @@ export default function CommentBox({ slug }: { slug: string }) {
     }
     useEffect(() => {
         (async () => {
-            const resp: Comment[] = await fetch(`https://api.github.com/repos/coding-club-gct/blogs/${slug}/comments`, {
-                headers: {
-                    "Authorization": `Bearer ${githubPat}`
-                }
-            }).then(res => res.json())
+            const resp: Comment[] = await fetch(`/api/comments/?slug=${slug}`).then(res => res.json())
             setComments(resp)
         })()
     }, [session])
@@ -69,7 +61,7 @@ export default function CommentBox({ slug }: { slug: string }) {
         <Divider />
         <div>
             <p className="text-xl font-medium"> Comment Section </p>
-            <a href={`https://github.com/coding-club-gct/blogs/${slug}`} target="_blank" className="text-blue no-underline text-sm"> {slug} </a>
+            <a href={`https://github.com/${owner}/${repo}/${slug}`} target="_blank" className="text-blue no-underline text-sm"> {slug} </a>
         </div>
         {!session && <p className="text-red text-sm"> Login to post a comment </p>}
         {comments.map((comment, i) => <div key={i} className="flex gap-4">

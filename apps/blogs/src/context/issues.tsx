@@ -21,12 +21,7 @@ export function IssuesProvider({ children }: { children: ReactNode }) {
 
     async function fetchAllIssues() {
         try {
-            fetch("https://api.github.com/repos/coding-club-gct/blogs/issues", {
-                headers: {
-                    "Accept": "application/vnd.github+json",
-                    "Authorization": `Bearer ${githubPat}`,
-                },
-            }).then(res => {
+            fetch("/api/issues").then(res => {
                 setStatus(res.status)
                 if(res.status === 200) {
                     res.json().then(data => setIssues(data))

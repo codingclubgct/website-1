@@ -81,23 +81,23 @@ export default function ReactReactions({ slug }: { slug: string }) {
     const handleReact = async (content: keyof Reactions) => {
         const found = reactionsData?.find(c => c.content === content)
         if (found) {
-            await fetch(`https://api.github.com/repos/coding-club-gct/blogs/${slug}/reactions/${found.id}`, {
+            await fetch("/api/reactions", {
                 method: "DELETE",
-                headers: {
-                    "Authorization": `Bearer ${githubPat}`
-                }
+                body: JSON.stringify({
+                    id: found.id,
+                    slug
+                })
             }).then(() => {
                 setReactions(prev => prev ? ({ ...prev, [content]: prev[content] - 1, total_count: prev.total_count - 1 }) : prev)
                 setCurrent(prev => prev.filter(p => p !== found.content))
             })
             setReactionsData(reactionData => reactionData?.filter(r => r.content !== content))
         } else {
-            const resp: Reaction = await fetch(`https://api.github.com/repos/coding-club-gct/blogs/${slug}/reactions`, {
+            const resp: Reaction = await fetch("/api/reactions", {
                 method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${githubPat}`
-                }, body: JSON.stringify({
-                    content
+                body: JSON.stringify({
+                    content,
+                    slug
                 })
             }).then((res) => {
                 setReactions(prev => prev ? ({ ...prev, [content]: prev[content] + 1, total_count: prev.total_count + 1 }) : prev)
@@ -110,20 +110,11 @@ export default function ReactReactions({ slug }: { slug: string }) {
 
     useEffect(() => {
         (async function () {
-            const resp: Issue = await fetch(`https://api.github.com/repos/coding-club-gct/blogs/${slug}`, {
-                headers: {
-                    "Authorization": `Bearer ${githubPat}`
-                }
-            }).then(res => res.json())
-            const githubReactionsData: Reaction[] = await fetch(resp.reactions.url, {
-                headers: {
-                    "Authorization": `Bearer ${githubPat}`
-                }
-            }).then(res => res.json())
-            setReactionsData(githubReactionsData)
-            const githubUserReactions = githubReactionsData.filter(({ user: { id } }) => id === session?.id).map(r => r.content)
+            const { issuesRes, reactionsRes }: { issuesRes: Issue, reactionsRes: Reaction[] } = await fetch(`/api/reactions/?slug=${slug}`).then(res => res.json())
+            setReactionsData(reactionsRes)
+            const githubUserReactions = reactionsRes.filter(({ user: { id } }) => id === session?.id).map(r => r.content)
             setCurrent(githubUserReactions)
-            const { reactions }: { reactions: Reactions & { url: string } } = resp
+            const { reactions }: { reactions: Reactions & { url: string } } = issuesRes
             const { url, ...rest } = reactions
             setReactions(rest as Reactions)
         })()

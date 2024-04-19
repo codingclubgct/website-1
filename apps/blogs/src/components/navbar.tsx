@@ -30,10 +30,10 @@ export function Tray({ tree, pl }: { tree?: FolderNode | null, pl: number }) {
 
         return (
             <div key={node.path}>
-                <div onClick={handleItemClick} style={{ paddingLeft: pl }} className={"flex items-center text-overlay2 hover:text-text gap-2 hover:bg-crust p-2 cursor-pointer mr-4" + (node.path === pathname ? " bg-crust text-text" : " ")}>
+                {node.name !== "root" && <div onClick={handleItemClick} style={{ paddingLeft: pl }} className={"flex items-center text-overlay2 hover:text-text gap-2 hover:bg-crust p-2 cursor-pointer mr-4" + (node.path === pathname ? " bg-crust text-text" : " ")}>
                     {isDir ? clicked ? <FontAwesomeIcon icon={faFolderOpen} className="text-mauve" /> : <FontAwesomeIcon icon={faFolderClosed} /> : <div className="w-2 h-2 rounded-full bg-mauve"></div>}
-                    <p className='capitalize'> {node.name === "root" ? "directory" : node.name.replaceAll("-", " ")} </p>
-                </div>
+                    <p className='capitalize'> {node.name.replaceAll("-", " ")} </p>
+                </div>}
                 {clicked && node.children?.map((child, index) => (
                     <Tray key={index} tree={child} pl={pl + 12} />
                 ))}

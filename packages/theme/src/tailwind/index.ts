@@ -10,6 +10,9 @@ export const generateTailwindConfig = <T>(colorScheme: ColorScheme<T>) => {
     corePlugins: {
       preflight: false
     },
+    safelist: [
+      {pattern: /hljs-+/}
+    ],
     plugins: [
       createThemes({
         light: colorScheme.light,
@@ -26,7 +29,7 @@ export const generateTailwindConfig = <T>(colorScheme: ColorScheme<T>) => {
               '--tw-prose-headings': 'var(--tw-prose-body)',
               '--tw-prose-links': 'hsl(var(--twc-blue))',
               '--tw-prose-pre-code': 'var(--twc-body)',
-              '--tw-prose-pre-bg': 'hsl(var(--twc-surface0))',
+              '--tw-prose-pre-bg': 'hsl(var(--twc-mantle))',
               '--tw-prose-code': 'var(--tw-prose-body)',
               code: {
                 backgroundColor: 'var(--tw-prose-pre-bg)',

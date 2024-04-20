@@ -14,7 +14,7 @@ import { headers } from "next/headers";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://blogs.codingclubgct.in"),
-  title: "Blog | Coding Club GCT",
+  title: "Blogs | Coding Club GCT",
   description: 'A club exclusively for coding. Here we practice and participate in programming competitions, solving real-world problems. Develop applications, providing tech support to our college and working on open source contributions.',
   icons: ["/favicon.ico", '/favicon-16x16.png', '/favicon-32x32.png', '/apple-touch-icon.png'],
   openGraph: {
@@ -22,11 +22,11 @@ export const metadata: Metadata = {
     locale: 'en_IN',
     url: 'https://blogs.codingclubgct.in',
     siteName: 'Blog | Coding Club GCT',
-    title: 'Blog | Coding Club GCT',
+    title: 'Blogs | Coding Club GCT',
     description: 'A club exclusively for coding. Here we practice and participate in programming competitions, solving real-world problems. Develop applications, providing tech support to our college and working on open source contributions.',
   },
   twitter: {
-    title: 'Blog | Coding Club GCT',
+    title: 'Blogs | Coding Club GCT',
     description: 'A club exclusively for coding. Here we practice and participate in programming competitions, solving real-world problems. Develop applications, providing tech support to our college and working on open source contributions.',
   }
 }

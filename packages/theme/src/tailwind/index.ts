@@ -17,5 +17,27 @@ export const generateTailwindConfig = <T>(colorScheme: ColorScheme<T>) => {
       }),
       typography
     ],
+    theme: {
+      extend: {
+        typography: {
+          DEFAULT: {
+            css: {
+              '--tw-prose-body': 'hsl(var(--twc-text))',
+              '--tw-prose-headings': 'var(--tw-prose-body)',
+              '--tw-prose-links': 'hsl(var(--twc-blue))',
+              '--tw-prose-pre-code': 'var(--twc-body)',
+              '--tw-prose-pre-bg': 'hsl(var(--twc-surface0))',
+              '--tw-prose-code': 'var(--tw-prose-body)',
+              code: {
+                backgroundColor: 'var(--tw-prose-pre-bg)',
+                padding: "4px",
+                borderRadius: "4px",
+                borderColor: "var(--tw-prose-body)",
+              }
+            }
+          }
+        }
+      }
+    }
   } as Config;
 }

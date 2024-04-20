@@ -3,7 +3,9 @@ import ReactReactions from "@/components/reactReactions";
 import { faArrowUpRightFromSquare, faClock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Divider } from "@mui/material";
+import { CommandPaster } from "@stianlarsen/react-package-paster";
 import { Blog, allBlogs } from "contentlayer/generated";
+import { MDXComponents } from "mdx/types";
 import { getMDXComponent } from "next-contentlayer/hooks";
 import { notFound } from "next/navigation";
 
@@ -68,7 +70,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
                         </div>
                     </div>
                 </div> : <></>}
-                <div>
+                <div className="prose">
                     <MDXContent />
                 </div>
                 <CommentBox slug={`issues/${issueNumber}`} />

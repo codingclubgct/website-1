@@ -1,3 +1,5 @@
+@tailwind base;
+
 p,
 a,
 span {
@@ -21,3 +23,7 @@ i {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
 }
+
+/* code {
+    @apply p-1 rounded bg-surface0
+} */

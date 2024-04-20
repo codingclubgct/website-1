@@ -12,7 +12,7 @@ import "./tailwind.css";
 import { Metadata } from "next";
 import { headers } from "next/headers";
 
-export const metadata : Metadata = {
+export const metadata: Metadata = {
   metadataBase: new URL("https://blogs.codingclubgct.in"),
   title: "Blog | Coding Club GCT",
   description: 'A club exclusively for coding. Here we practice and participate in programming competitions, solving real-world problems. Develop applications, providing tech support to our college and working on open source contributions.',

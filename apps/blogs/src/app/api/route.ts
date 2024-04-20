@@ -14,5 +14,5 @@ const transformer = (blogs: Blog[]) => blogs.map(blog => ({
 export function GET(req: Request) {
         const url = new URL(req.url)
         const author = url.searchParams.get("author")
-        return author ? NextResponse.json(transformer(allBlogs.filter(blog => blog.githubData.author.name === author))) : NextResponse.json(transformer(allBlogs))
+        return author ? NextResponse.json(transformer(allBlogs.filter(blog => blog.githubData?.author.name === author))) : NextResponse.json(transformer(allBlogs))
 }

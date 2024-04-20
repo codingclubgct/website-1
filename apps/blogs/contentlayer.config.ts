@@ -1,10 +1,13 @@
 import { defineDocumentType, makeSource } from 'contentlayer/source-files'
 import GithubSlugger from "github-slugger"
 import rehypeSlug from "rehype-slug"
+import remarkGfm from "remark-gfm"
+import rehypePrettyCode from "rehype-pretty-code"
 import { getTimeString } from './src/lib/getTimeString'
 import { Issue } from './src/types/issues'
 import { Blog as BlogType } from 'contentlayer/generated'
 import { githubPat, owner, repo } from './src/lib/constants'
+import { visit } from 'unist-util-visit';
 
 async function getProfileFromUsername(username: string) {
     const profile = await fetch(`https://api.github.com/users/${username}`, {
@@ -153,7 +156,44 @@ export const Blog = defineDocumentType(() => ({
 }))
 
 export default makeSource({
-    contentDirPath: 'src/blogs', documentTypes: [Blog], mdx: {
-        rehypePlugins: [rehypeSlug],
+    contentDirPath: 'src/blogs',
+    documentTypes: [Blog],
+    mdx: {
+        rehypePlugins: [
+            rehypeSlug,
+            () => (tree) => {
+                visit(tree, (node) => {
+                    if (node?.type === "element" && node?.tagName === "pre") {
+                        const [codeEl] = node.children;
+
+                        if (codeEl.tagName !== "code") return;
+
+                        node.raw = codeEl.children?.[0].value;
+                    }
+                });
+            },
+            [(rehypePrettyCode as any), {
+                theme: {
+                    dark: "one-dark-pro",
+                    light: "github-light"
+                }
+            }],
+            () => (tree) => {
+                visit(tree, (node) => {
+                    if (node?.type === "element" && node?.tagName === "div") {
+                        if (!("data-rehype-pretty-code-fragment" in node.properties)) {
+                            return;
+                        }
+
+                        for (const child of node.children) {
+                            if (child.tagName === "pre") {
+                                child.properties["raw"] = node.raw;
+                            }
+                        }
+                    }
+                });
+            },
+        ],
+        remarkPlugins: [remarkGfm]
     },
 })

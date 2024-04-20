@@ -45,13 +45,14 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
                 {githubData ? <div className="w-full flex flex-col gap-4">
                     {!Boolean(blog.hideAuthor) && <div className="w-full flex flex-col md:flex-row md:items-center gap-4">
                         <img className="rounded-full w-20 h-20 object-contain" src={githubData.author.avatar_url} alt="" />
-                        <div className="flex flex-col justify-between">
+                        <div className="flex flex-col justify-between gap-1">
                             <p> {githubData.author.name} </p>
                             <div className="flex gap-2">
                                 <Chip textColor="text-yellow" text="GitHub" href={githubData.author.html_url} />
                                 {githubData.author.blog && <Chip textColor="text-pink" text="Website" href={githubData.author.blog} />}
                                 {githubData.author.email && <Chip textColor="text-rosewater" text="Email" href={githubData.author.email} />}
                             </div>
+                            <p className="text-sm text-subtext0">{githubData.author.date}</p>
                         </div>
                     </div>}
                     <div className="flex justify-end items-center">

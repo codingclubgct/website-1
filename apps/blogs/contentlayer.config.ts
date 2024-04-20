@@ -73,6 +73,7 @@ export type GithubDataForBlog = {
 async function getGithubDataforBlog(pathname: string): Promise<GithubDataForBlog | undefined> {
     const filePathName = `apps/blogs/src/blogs/${pathname}.mdx`
     const apiUrl = `https://api.github.com/repos/${owner}/${repo}/commits?path=${filePathName}`
+    console.log(apiUrl)
     const resp = await fetch(apiUrl, {
         method: "GET",
         headers: {
@@ -85,13 +86,13 @@ async function getGithubDataforBlog(pathname: string): Promise<GithubDataForBlog
         console.log(resp)
         return undefined
     }
-    const { author, commit: initialCommit } = resp[0]
-    const { committer } = resp[resp.length - 1]
+    const { committer } = resp[0]
+    const { author, commit: initialCommit } = resp[resp.length - 1]
     const { name, blog, html_url, email } = await getProfileFromUsername(author.login)
     const { name: committerName } = await getProfileFromUsername(committer.login)
     return {
         author: { name, blog, html_url, email, avatar_url: author.avatar_url, date: getTimeString(initialCommit.author.date) },
-        committer: { name: committerName, avatar_url: committer.avatar_url, committed_date: getTimeString(resp[resp.length - 1].commit.committer.date) }
+        committer: { name: committerName, avatar_url: committer.avatar_url, committed_date: getTimeString(resp[0].commit.committer.date) }
     }
 }
 

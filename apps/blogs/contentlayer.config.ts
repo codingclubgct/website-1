@@ -2,12 +2,10 @@ import { defineDocumentType, makeSource } from 'contentlayer/source-files'
 import GithubSlugger from "github-slugger"
 import rehypeSlug from "rehype-slug"
 import remarkGfm from "remark-gfm"
-import rehypePrettyCode from "rehype-pretty-code"
 import { getTimeString } from './src/lib/getTimeString'
 import { Issue } from './src/types/issues'
 import { Blog as BlogType } from 'contentlayer/generated'
 import { githubPat, owner, repo } from './src/lib/constants'
-import { visit } from 'unist-util-visit';
 
 async function getProfileFromUsername(username: string) {
     const profile = await fetch(`https://api.github.com/users/${username}`, {

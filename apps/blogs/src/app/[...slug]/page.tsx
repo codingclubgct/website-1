@@ -70,7 +70,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
                         </div>
                     </div>
                 </div> : <></>}
-                <div className="prose">
+                <div className="prose mx-auto mt-12">
                     <MDXContent />
                 </div>
                 <CommentBox slug={`issues/${issueNumber}`} />

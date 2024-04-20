@@ -68,10 +68,10 @@ type Issue = {
 const BlogInfo = ({ issueNumber }: { issueNumber: number }) => {
     const [issue, setIssue] = useState<Issue | undefined>()
     useEffect(() => {
-        fetch(`https://api.github.com/repos/coding-club-gct/blogs/issues/${issueNumber}`,{
-            method : "GET",
-            headers : {
-                "Authorization" : process.env.NEXT_PUBLIC_GITHUB_TOKEN!
+        fetch(`https://api.github.com/repos/coding-club-gct/front-gate/issues/${issueNumber}`, {
+            method: "GET",
+            headers: {
+                "Authorization": process.env.NEXT_PUBLIC_GITHUB_TOKEN!
             }
         }).then(res => res.json()).then(data => setIssue(data))
 
@@ -112,8 +112,8 @@ export default function Blog() {
     useEffect(() => {
         async function fetchBlogs() {
 
-            const _blogItems: BlogItem[] = await fetch('https://blogs.codingclubgct.in/api').then(res => res.json())
-            setBlogItems(_blogItems)
+            const { data } = await fetch('https://blogs.codingclubgct.in/api').then(res => res.json())
+            setBlogItems(data)
         }
         fetchBlogs()
     }, [])
@@ -129,10 +129,7 @@ export default function Blog() {
                         <FontAwesomeIcon icon={faClock} className="w-4 text-sm text-subtext0"></FontAwesomeIcon>
                         <p className="text-sm mr-2 ">{blogItem.read} read</p>
                         <BlogInfo issueNumber={blogItem.issueNumber}/>
-
                     </div>
-
-
                     <div className="flex">
                         <div className="flex items-center">
                             <img src={blogItem.githubData.author.avatar_url} className="w-12 object-contain rounded-full" alt="Avatar" />

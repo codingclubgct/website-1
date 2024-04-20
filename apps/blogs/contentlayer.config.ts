@@ -62,6 +62,7 @@ export type GithubDataForBlog = {
         html_url: string,
         email: string,
         avatar_url: string
+        date: string
     }, committer: {
         name: string,
         avatar_url: string
@@ -84,12 +85,12 @@ async function getGithubDataforBlog(pathname: string): Promise<GithubDataForBlog
         console.log(resp)
         return undefined
     }
-    const { author } = resp[0]
+    const { author, commit: initialCommit } = resp[0]
     const { committer } = resp[resp.length - 1]
     const { name, blog, html_url, email } = await getProfileFromUsername(author.login)
     const { name: committerName } = await getProfileFromUsername(committer.login)
     return {
-        author: { name, blog, html_url, email, avatar_url: author.avatar_url },
+        author: { name, blog, html_url, email, avatar_url: author.avatar_url, date: getTimeString(initialCommit.author.date) },
         committer: { name: committerName, avatar_url: committer.avatar_url, committed_date: getTimeString(resp[resp.length - 1].commit.committer.date) }
     }
 }
@@ -113,6 +114,9 @@ export const Blog = defineDocumentType(() => ({
         }, hideAuthor: {
             type: "boolean"
         }, read: {
+            type: "string",
+            required: true
+        }, description: {
             type: "string",
             required: true
         }

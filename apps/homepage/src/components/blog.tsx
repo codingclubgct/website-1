@@ -93,8 +93,9 @@ type BlogItem = {
             name: string,
             blog: string | null
             html_url: string,
-            email: string | null
-            avatar_url: string
+            email: string | null,
+            avatar_url: string,
+            date: string
         },
         committer: {
             name: string,
@@ -111,8 +112,8 @@ export default function Blog() {
 
     useEffect(() => {
         async function fetchBlogs() {
-
-            const { data } = await fetch('https://blogs.codingclubgct.in/api').then(res => res.json())
+            const blogPathNames = ["how-to-blog"]
+            const { data } = await fetch(`https://blogs.codingclubgct.in/api?blogs=${JSON.stringify(blogPathNames)}`).then(res => res.json())
             setBlogItems(data)
         }
         fetchBlogs()
@@ -123,12 +124,14 @@ export default function Blog() {
                 <div key={i} className="flex flex-col   p-4 md:w-1/3 gap-2 bg-mantle rounded ">
                     <img src={`https://blogs.codingclubgct.in/${blogItem.coverImage}`} className="w-64 object-cover"></img>
                     <Divider className="my-4"></Divider>
-                    <p className="text-text text-3xl font-medium">{blogItem.title}</p>
+                    <div className="flex items-center h-32">
+                        <p className="text-text text-3xl font-medium">{blogItem.title}</p>
+                    </div>
                     <p className="text-sm ">{blogItem.githubData.committer.committed_date}</p>
                     <div className="flex gap-2 items-center">
                         <FontAwesomeIcon icon={faClock} className="w-4 text-sm text-subtext0"></FontAwesomeIcon>
                         <p className="text-sm mr-2 ">{blogItem.read} read</p>
-                        <BlogInfo issueNumber={blogItem.issueNumber}/>
+                        <BlogInfo issueNumber={blogItem.issueNumber} />
                     </div>
                     <div className="flex">
                         <div className="flex items-center">

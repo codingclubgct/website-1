@@ -35,7 +35,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
                     <p className="text-6xl font-bold"> {blog.title} </p>
                     <div className="flex gap-2 items-center">
                         <FontAwesomeIcon className="" icon={faClock}></FontAwesomeIcon>
-                        <p className="text-sm text-subtext0"> {blog.read} Read</p>
+                        <p className="text-sm text-subtext0"> {`${blog.read} Read`}</p>
                         <ReactReactions slug={`issues/${issueNumber}`} />
                     </div>
                     {blog.tags ? <div className="flex gap-2 items-center">

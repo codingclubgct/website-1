@@ -1,7 +1,6 @@
-import { Reactions } from '@/components/reactReactions';
+import { _getReactions } from '@/lib/helpers';
 import { Issue } from '@/types/issues';
 import { Blog, allBlogs } from 'contentlayer/generated'
-import { _getReactions } from './reactions/route';
 
 export async function GET(req: Request) {
     // Parse the request URL

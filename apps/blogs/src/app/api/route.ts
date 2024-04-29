@@ -1,19 +1,9 @@
+import { Reactions } from '@/components/reactReactions';
+import { Issue } from '@/types/issues';
 import { Blog, allBlogs } from 'contentlayer/generated'
+import { _getReactions } from './reactions/route';
 
-// Function to transform blogs data
-const transform = (blogs: Blog[]) => blogs.map(blog => ({
-    tags: blog.tags,
-    url: blog.url,
-    read: blog.read,
-    coverImage: blog.coverImage,
-    title: blog.title,
-    githubData: blog.githubData,
-    issueNumber: blog.issueNumber,
-    date: blog.githubData.date,
-    description: blog.description
-}));
-
-export function GET(req: Request) {
+export async function GET(req: Request) {
     // Parse the request URL
     const url = new URL(req.url);
 
@@ -31,11 +21,29 @@ export function GET(req: Request) {
         filteredBlogs = filteredBlogs.filter(blog => blog.githubData?.author.name.toLowerCase() === author.toLowerCase());
     }
 
-    // Transform the filtered blogs data
-    const transformedData = transform(filteredBlogs);
+    const reactionPromises: Promise<{ issuesRes: Issue }>[] = filteredBlogs.map(blog => _getReactions(`issues/${blog.issueNumber}`))
+    const reactionsData = await Promise.all(reactionPromises)
+    const data = reactionsData.map(({ issuesRes }) => {
+        const { reactions, comments } = issuesRes
+        const { url, ...rest } = reactions
+        const blog = filteredBlogs.find(blog => blog.issueNumber === issuesRes.number)!
+        return {
+            tags: blog.tags,
+            url: blog.url,
+            read: blog.read,
+            coverImage: blog.coverImage,
+            title: blog.title,
+            githubData: blog.githubData,
+            issueNumber: blog.issueNumber,
+            date: blog.githubData.date,
+            description: blog.description,
+            reactions: rest,
+            comments: comments
+        }
+    })
 
     // Return the response with CORS headers
-    const jsonResponse = JSON.stringify({ data: transformedData });
+    const jsonResponse = JSON.stringify({ data });
     return new Response(jsonResponse, {
         headers: {
             'Content-Type': 'application/json',

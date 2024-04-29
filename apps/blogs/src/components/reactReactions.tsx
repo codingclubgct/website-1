@@ -10,7 +10,7 @@ import { useSession } from "next-auth/react"
 import { useContext, useEffect, useState } from "react"
 import { useDetectClickOutside } from 'react-detect-click-outside'
 
-type Reactions = {
+export type Reactions = {
     "total_count": number;
     '+1': number;
     '-1': number;
@@ -107,7 +107,7 @@ export default function ReactReactions({ slug }: { slug: string }) {
             setReactionsData(prev => prev ? [...prev, resp] : prev)
         }
     }
-
+    
     useEffect(() => {
         (async function () {
             const { issuesRes, reactionsRes }: { issuesRes: Issue, reactionsRes: Reaction[] } = await fetch(`/api/reactions/?slug=${slug}`).then(res => res.json())

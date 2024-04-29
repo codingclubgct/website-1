@@ -28,9 +28,7 @@ export async function POST(req: Request) {
     return res
 }
 
-export async function GET(req: Request) {
-    const url = new URL(req.url)
-    const slug = url.searchParams.get("slug")
+export async function _getReactions(slug: string) {
     const issuesRes: Issue = await fetch(`https://api.github.com/repos/${owner}/${repo}/${slug}`, {
         headers: {
             "Authorization": `Bearer ${githubPat}`
@@ -41,5 +39,15 @@ export async function GET(req: Request) {
             "Authorization": `Bearer ${githubPat}`
         }
     }).then(res => res.json())
-    return NextResponse.json({ issuesRes, reactionsRes })
+    return { issuesRes, reactionsRes }
+}
+
+export async function GET(req: Request) {
+    const url = new URL(req.url)
+    const slug = url.searchParams.get("slug")
+    if (!slug) {
+        return NextResponse.json({ error: "Slug is required" }, { status: 400 })
+    }
+    const data = await _getReactions(slug)
+    return NextResponse.json(data)
 }

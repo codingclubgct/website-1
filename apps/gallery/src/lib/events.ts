@@ -1,5 +1,5 @@
-import poster from "@/assests/poster.jpeg"
-import cartoon from "@/assests/cartoon.jpg"
+import poster from "@/assets/poster.jpeg"
+import cartoon from "@/assets/cartoon.png"
 
 export const events = [
     {

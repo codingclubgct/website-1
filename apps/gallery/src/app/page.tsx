@@ -1,7 +1,6 @@
 "use client"
 
-import cover from "@/assests/img.png";
-import { Avatar, AvatarGroup, Button, Container, Divider, MobileStepper, useMediaQuery } from "@mui/material";
+import { Avatar, AvatarGroup, Button, Divider, MobileStepper, useMediaQuery } from "@mui/material";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDiscord, faInstagram, faYoutube, faLinkedin, faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { faArrowLeft, faArrowRight, faBookmark, faCalendar, faComment, faEarth, faEnvelope, faHeart, faPeopleGroup, faSave, faTag, faUpload, faUser, faUsers } from "@fortawesome/free-solid-svg-icons"
@@ -9,13 +8,11 @@ import Header from "@/components/header"
 import { team } from "@/lib/team"
 import { useContext, useEffect, useState } from "react";
 import { DarkModeContext } from "@/context/darkmode";
-import { CatppuccinContext } from "@/context/catppuccin";
 import { events } from "@/lib/events"
 import Link from "next/link";
-import { InstagramEmbed } from 'react-social-media-embed';
-import ccdark from "@/assests/codingclub/dark.png"
-import cclight from "@/assests/codingclub/light.png"
-import cartoon from "@/assests/cartoon.jpg"
+import ccdark from "@/assets/codingclub/dark.png"
+import cclight from "@/assets/codingclub/light.png"
+import cartoon from "@/assets/cartoon.png"
 
 const socialMediaItems = [
   { icon: faDiscord, href: "" },
@@ -198,7 +195,7 @@ export default function Home() {
                   <a className="mr-0 ml-auto" href=""><Button className="text-sm" variant="contained">View Profile</Button></a>
                 </div>
                 <div >
-                  <img src={cartoon.src} className="h-[350px] w-full"></img>
+                  <img src={cartoon.src} className="h-[350px] w-full bg-mantle"></img>
                 </div>
                 <a href=" " className="text-blue no-underline px-2">View more on Instagram</a>
                 <Divider></Divider>

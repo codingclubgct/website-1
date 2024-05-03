@@ -1,5 +1,5 @@
-import girl from "@/assests/girl.jpg"
-import logo from "@/assests/cartoon.jpg"
+import girl from "@/assets/girl.jpg"
+import logo from "@/assets/cartoon.png"
 export const team = [
     { name: "Haritha S", roll: "2018116", designation: "Operations and HR Lead", photo: logo.src },
     { name: "Keerthi", roll: "2018123", designation: "Executive Member", photo: girl.src },

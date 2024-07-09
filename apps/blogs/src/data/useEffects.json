@@ -1,0 +1,17 @@
+{
+    "profile": {
+        "github": "useEffects",
+        "name": "useEffects",
+        "nameSlug": "useEffects"
+    },
+    "blogs": [
+        {
+            "title": "A2APoint project report",
+            "folderName": "a2apoint-project-report",
+            "folderSlug": "a2apoint-project-report",
+            "remoteSource": "https://github.com/useEffects/a2apoint",
+            "issuesUrl": "https://github.com/useEffects/a2apoint/issues/1",
+            "hidden": true
+        }
+    ]
+}

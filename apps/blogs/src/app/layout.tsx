@@ -4,13 +4,11 @@ import { DarkModeProvider } from "@/context/darkmode";
 import { IssuesProvider } from "@/context/issues";
 import { ThemeProvider } from "@/context/mui";
 import { OpenProvider } from "@/context/open";
-import { normalizePaths } from "@/lib/normalize-path";
-import View from "@/components/view";
-import { allBlogs } from "contentlayer/generated";
 import "./global.css";
 import "./tailwind.css";
 import { Metadata } from "next";
 import { headers } from "next/headers";
+import View from "@/components/view";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://blogs.codingclubgct.in"),
@@ -36,8 +34,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const url = new URL(headersList.get("x-url")!)
   const author = url.searchParams.get("author")
 
-  const blogs = author ? allBlogs.filter(blog => blog.githubData?.author.name === author) : allBlogs
-
   return (
     <html lang="en" id="__next">
       <body>
@@ -47,7 +43,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <CatppuccinProvider>
                 <OpenProvider>
                   <IssuesProvider>
-                    <View tree={normalizePaths(blogs.map(blog => blog.url))}>
+                    <View>
                       {children}
                     </View>
                   </IssuesProvider>

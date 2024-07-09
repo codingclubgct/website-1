@@ -1,9 +1,6 @@
-const { withContentlayer } = require('next-contentlayer')
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
-  reactStrictMode: false
+  transpilePackages: ["next-remote-mdx", "next-remote-mdx-client"]
 }
  
-module.exports = withContentlayer(nextConfig)
+module.exports = nextConfig

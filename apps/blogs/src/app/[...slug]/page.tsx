@@ -1,96 +1,118 @@
-import CommentBox from "@/components/commentBox";
 import Pre from "@/components/mdx-components/pre";
-import ReactReactions from "@/components/reactReactions";
-import { faArrowUpRightFromSquare, faClock } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Divider } from "@mui/material";
-import { Blog, allBlogs } from "contentlayer/generated";
+import { getAllBlogs, fetchRepo } from "@/lib/helpers";
+import { octokit } from "@/lib/octokit";
+import { GetResponseDataTypeFromEndpointMethod, GetResponseTypeFromEndpointMethod } from "@octokit/types";
 import { MDXComponents } from "mdx/types";
-import { getMDXComponent } from "next-contentlayer/hooks";
-import { notFound } from "next/navigation";
+import { githubPat } from "@/lib/constants";
+import { MDXRemote } from "next-mdx-remote-client/rsc"
+import { plugins, TocItem } from "@ipikuka/plugins";
+import { serialize } from "next-mdx-remote-client/serialize";
+import { notFound, redirect } from "next/navigation";
+import dynamic from "next/dynamic";
+import { headers } from "next/headers";
+import { NextResponse } from "next/server";
+import { Divider } from "@mui/material";
 
 const components: MDXComponents = {
-    pre: Pre
-}
-
-function Chip({ textColor, text, href }: { textColor: string, href: string, text: string }) {
-    return <div className={`${textColor} text-sm rounded flex gap-2 items-center bg-mantle p-1 cursor-pointer`}>
-        <a target="_blank" href={href} className="text-inherit no-underline">
-            {text}
-        </a>
-        <FontAwesomeIcon className="text-inherit w-4 h-4" icon={faArrowUpRightFromSquare} />
-    </div>
-}
+    pre: Pre,
+};
 
 export default async function Page({ params }: { params: { slug: string[] } }) {
-    const blog: Blog | undefined = allBlogs.find((blog) => blog.url === params.slug.join("/"));
-    if (!blog) notFound()
-    const MDXContent = getMDXComponent(blog.body.code)
-    const { githubData, issueNumber } = blog
-    return <div>
-        <div className="flex gap-4 w-full">
-            <div className="md:w-[calc(100%-300px)] flex flex-col gap-8 p-4 md:px-0">
-                <img className="w-full object-contain" src={blog.coverImage} alt="" />
-                <div className="flex flex-col gap-2">
-                    <p className="text-6xl font-bold"> {blog.title} </p>
-                    <div className="flex gap-2 items-center">
-                        <FontAwesomeIcon className="" icon={faClock}></FontAwesomeIcon>
-                        <p className="text-sm text-subtext0"> {`${blog.read} Read`}</p>
-                        <ReactReactions slug={`issues/${issueNumber}`} />
-                    </div>
-                    {blog.tags ? <div className="flex gap-2 items-center">
-                        {blog.tags.map((tag, i) => <span className="text-sm rounded bg-mantle p-1" key={i}> {tag} </span>)}
-                    </div> : <></>}
-                </div>
-                {githubData ? <div className="w-full flex flex-col gap-4">
-                    {!Boolean(blog.hideAuthor) && <div className="w-full flex flex-col md:flex-row md:items-center gap-4">
-                        <img className="rounded-full w-20 h-20 object-contain" src={githubData.author.avatar_url} alt="" />
-                        <div className="flex flex-col justify-between gap-1">
-                            <p> {githubData.author.name} </p>
-                            <div className="flex gap-2">
-                                <Chip textColor="text-yellow" text="GitHub" href={githubData.author.html_url} />
-                                {githubData.author.blog && <Chip textColor="text-pink" text="Website" href={githubData.author.blog} />}
-                                {githubData.author.email && <Chip textColor="text-rosewater" text="Email" href={githubData.author.email} />}
-                            </div>
-                            <p className="text-sm text-subtext0">{githubData.author.date}</p>
-                        </div>
-                    </div>}
-                    <div className="flex justify-end items-center">
-                        <div className="text-sm">
-                            <p> Last edited by, </p>
-                            <div className="flex items-center gap-2">
-                                <img className="w-6 h-6 object-contain rounded-full" src={githubData.committer.avatar_url} alt="" />
-                                <p> {githubData.committer.name} </p>
-                            </div>
-                            <p className="text-subtext1"> {githubData.committer.committed_date} </p>
-                        </div>
-                    </div>
-                    <div className="relative md:hidden w-full">
-                        <Divider />
-                        <div className="flex flex-col gap-4 py-4 overflow-y-scroll scrollbar-hide sticky top-0">
-                            <p> Table of Contents </p>
-                            {blog.headings.map(({ text, slug }: { text: string, slug: string }, i: number) =>
-                                <a key={i} className="text-sm no-underline" href={`#${slug}`}>{text}</a>
-                            )}
-                        </div>
-                    </div>
-                </div> : <></>}
-                <div className="mt-12 !max-w-[calc(100%-1rem)] mx-auto prose">
-                    <MDXContent components={components} />
-                </div>
-                <CommentBox slug={`issues/${issueNumber}`} />
-            </div>
-            <div className="hidden md:flex gap-4 w-[300px] md:pr-4">
-                <Divider orientation="vertical" className="m-0"></Divider>
-                <div className="relative">
-                    <div className="h-screen flex flex-col gap-4 py-4 overflow-y-scroll scrollbar-hide sticky top-0">
-                        <p> Table of Contents </p>
-                        {blog.headings.map(({ text, slug }: { text: string, slug: string }, i: number) =>
-                            <a key={i} className="text-sm no-underline" href={`#${slug}`}>{text}</a>
-                        )}
-                    </div>
-                </div>
+    const allBlogs = await getAllBlogs()
+    const [nameSlug, folderSlug, ...rest] = params.slug
+
+    const headersList = headers()
+    const url = new URL(headersList.get("x-url")!)
+
+
+    const user = allBlogs.find(entry => entry.profile.nameSlug === nameSlug)
+    const blog = user?.blogs.find(blog => blog.folderSlug === folderSlug)
+    if (!user || !blog) return notFound()
+
+    const repo = await fetchRepo(blog.remoteSource)
+    if (!repo) return new NextResponse("Internal Server Error", { status: 500 })
+    const markdown = await fetchMarkdown(params, repo)
+
+    if (!markdown) return notFound()
+
+    const { scope: { toc } } = await serialize<{}, { toc: TocItem[] }>({
+        source: markdown,
+        options: {
+            mdxOptions: {
+                ...plugins({
+                    format: "md"
+                })
+            },
+            vfileDataIntoScope: ["toc"]
+        }
+    })
+
+    const rootLevelHeadings = toc.filter(item => item.parent === "root")
+
+    return <>
+        <div className="container flex flex-row justify-center">
+            <div className="w-[600px] mx-auto prose">
+                <MDXRemote
+                    source={markdown}
+                    components={components}
+                    options={{
+                        mdxOptions: {
+                            ...plugins({
+                                format: "md"
+                            })
+                        }
+                    }}
+                />
             </div>
         </div>
+        <Divider orientation="vertical" className="self-stretch h-auto" />
+        <div className="flex-1">
+            <TOC toc={rootLevelHeadings} />
+        </div>
+    </>
+}
+
+const TOC = ({ toc }: { toc: TocItem[] }) => {
+    return <div>
+        {toc.map((item, i) => {
+            return <div key={i}>
+                <a href={item.href}>{item.value}</a>
+            </div>
+        })}
     </div>
+}
+
+const fetchMarkdown = async (params: { slug: string[] }, repo: GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.get>) => {
+    const [nameSlug, folderSlug, ...rest] = params.slug
+
+    const filePath = rest.join("/")
+    const pathToSearch = filePath.endsWith(".md") ? filePath : filePath + "/README.md"
+
+    try {
+        const { data } = await octokit.repos.getContent({
+            owner: repo.owner.login,
+            repo: repo.name,
+            path: pathToSearch
+        }) as GetResponseTypeFromEndpointMethod<typeof octokit.repos.getContent>
+        if (!Array.isArray(data)) {
+            const content = await downloadContent(data.download_url!)
+            return content
+        } else {
+            const found = data.find(d => d.name === "README.md")
+            if (!found) return null
+            return await downloadContent(found.download_url!)
+        }
+    } catch (error) {
+        return null
+    }
+}
+
+const downloadContent = async (path: string) => {
+    const content = await fetch(path, {
+        headers: {
+            "Authorization": `token ${githubPat}`
+        },
+        cache: "no-store"
+    }).then(res => res.text())
+    return content
 }

@@ -13,7 +13,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 import ReactReactions from "./reactReactions";
 import { owner, repo } from "@/lib/constants";
 
-export default function CommentBox({ slug }: { slug: string }) {
+export default function CommentBox({ issuesUrl }: { issuesUrl: string }) {
     const { data: session } = useSession() as { data: Session & { access_token: string, id: number } | null };
     const [comments, setComments] = useState<Comment[]>([])
     const [current, setCurrent] = useState<Comment | null>(null)
@@ -42,7 +42,7 @@ export default function CommentBox({ slug }: { slug: string }) {
         if (!newComment) return
         fetch("/api/comments", {
             method: "POST",
-            body: JSON.stringify({ body: newComment, access_token: session?.access_token, slug })
+            body: JSON.stringify({ body: newComment, access_token: session?.access_token, issuesUrl: issuesUrl })
         }).then(res => res.json()).then((json: Comment) => {
             setComments(prev => [...prev, json])
             setNewComment("")
@@ -51,16 +51,15 @@ export default function CommentBox({ slug }: { slug: string }) {
     }
     useEffect(() => {
         (async () => {
-            const resp: Comment[] = await fetch(`/api/comments/?slug=${slug}`).then(res => res.json())
+            const resp: Comment[] = await fetch(`/api/comments/?issuesUrl=${issuesUrl}`).then(res => res.json())
             setComments(resp)
         })()
     }, [session])
 
     return <div className="flex flex-col gap-4 mb-12">
-        <Divider className="my-12" />
         <div>
             <p className="text-xl font-medium"> Comment Section </p>
-            <a href={`https://github.com/${owner}/${repo}/${slug}`} target="_blank" className="text-blue no-underline text-sm"> {slug} </a>
+            <a href={`https://github.com/${owner}/${repo}/${issuesUrl}`} target="_blank" className="text-blue no-underline text-sm"> {issuesUrl} </a>
         </div>
         {!session && <p className="text-red text-sm"> Login to post a comment </p>}
         {comments.map((comment, i) => <div key={i} className="flex gap-4">

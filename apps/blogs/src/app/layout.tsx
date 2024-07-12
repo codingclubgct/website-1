@@ -1,7 +1,6 @@
 import SessionProvider from "@/components/provider";
 import { CatppuccinProvider } from "@/context/catppuccin";
 import { DarkModeProvider } from "@/context/darkmode";
-import { IssuesProvider } from "@/context/issues";
 import { ThemeProvider } from "@/context/mui";
 import { OpenProvider } from "@/context/open";
 import "./global.css";
@@ -31,8 +30,6 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const headersList = headers()
-  const url = new URL(headersList.get("x-url")!)
-  const author = url.searchParams.get("author")
 
   return (
     <html lang="en" id="__next">
@@ -42,11 +39,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <ThemeProvider>
               <CatppuccinProvider>
                 <OpenProvider>
-                  <IssuesProvider>
-                    <View>
-                      {children}
-                    </View>
-                  </IssuesProvider>
+                  <View>
+                    {children}
+                  </View>
                 </OpenProvider>
               </CatppuccinProvider>
             </ThemeProvider>

@@ -21,3 +21,7 @@ i {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
 }
+
+.prose img {
+    @apply !w-full
+}

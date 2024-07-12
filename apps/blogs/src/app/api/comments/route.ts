@@ -1,4 +1,5 @@
 import { githubPat, owner, repo } from "@/lib/constants";
+import { octokit } from "@/lib/octokit";
 import { NextResponse } from "next/server";
 
 export async function PATCH(req: Request) {
@@ -24,9 +25,11 @@ export async function DELETE(req: Request) {
 }
 
 export async function POST(req: Request) {
-    const { slug, newComment, access_token } = await req.json()
+    const { issuesUrl, newComment, access_token } = await req.json()
+    if (!extractGithubIssueDetails(issuesUrl!)) return NextResponse.json({ error: "Invalid URL" }, { status: 400 })
+    const { owner, repo, issueNumber } = extractGithubIssueDetails(issuesUrl)!
 
-    const res = fetch(`https://api.github.com/repos/${owner}/${repo}/${slug}/comments`, {
+    const res = fetch(`https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}/comments`, {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${access_token}`
@@ -37,11 +40,16 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
     const reqUrl = new URL(req.url)
-    const slug = reqUrl.searchParams.get("slug")
-    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/${slug}/comments`, {
-        headers: {
-            "Authorization": `Bearer ${githubPat}`
-        }
-    }).then(res => res.json())
-    return NextResponse.json(res)
+    const issuesUrl = reqUrl.searchParams.get("issuesUrl")
+    if (!extractGithubIssueDetails(issuesUrl!)) return NextResponse.json({ error: "Invalid URL" }, { status: 400 })
+    const { owner, repo, issueNumber } = extractGithubIssueDetails(issuesUrl!)!
+    const { data } = await octokit.issues.listComments({
+        owner, repo, issue_number: parseInt(issueNumber)
+    })
+    return NextResponse.json(data)
 }
+
+const extractGithubIssueDetails = (url: string) => {
+    const match = url.match(/https:\/\/github\.com\/([^\/]+)\/([^\/]+)\/issues\/(\d+)/);
+    return match ? { owner: match[1], repo: match[2], issueNumber: match[3] } : null;
+};

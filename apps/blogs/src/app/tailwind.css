@@ -15,186 +15,185 @@
     }
 }
 
-@layer components {
-    .hljs {
-        @apply !bg-mantle !text-base !text-text !font-mono [&_*]:!font-mono;
-    }
 
-    .hljs-keyword {
-        @apply !text-mauve !not-italic;
-    }
+.hljs {
+    @apply !bg-transparent !text-base !text-text !font-mono [&_*]:!font-mono;
+}
 
-    .hljs-built_in {
-        @apply !text-red;
-    }
+.hljs-keyword {
+    @apply !text-mauve !not-italic;
+}
 
-    .hljs-type {
-        @apply !text-yellow;
-    }
+.hljs-built_in {
+    @apply !text-red;
+}
 
-    .hljs-literal {
-        @apply !text-peach;
-    }
+.hljs-type {
+    @apply !text-yellow;
+}
 
-    .hljs-number {
-        @apply !text-peach;
-    }
+.hljs-literal {
+    @apply !text-peach;
+}
 
-    .hljs-operator {
-        @apply !text-teal;
-    }
+.hljs-number {
+    @apply !text-peach;
+}
 
-    .hljs-punctuation {
-        @apply !text-subtext1;
-    }
+.hljs-operator {
+    @apply !text-teal;
+}
 
-    .hljs-property {
-        @apply !text-teal;
-    }
+.hljs-punctuation {
+    @apply !text-subtext1;
+}
 
-    .hljs-regexp {
-        @apply !text-pink;
-    }
+.hljs-property {
+    @apply !text-teal;
+}
 
-    .hljs-string {
-        @apply !text-green;
-    }
+.hljs-regexp {
+    @apply !text-pink;
+}
 
-    .hljs-char.escape_ {
-        @apply !text-green;
-    }
+.hljs-string {
+    @apply !text-green;
+}
 
-    .hljs-subst {
-        @apply !text-subtext0;
-    }
+.hljs-char.escape_ {
+    @apply !text-green;
+}
 
-    .hljs-symbol {
-        @apply !text-flamingo;
-    }
+.hljs-subst {
+    @apply !text-subtext0;
+}
 
-    .hljs-variable {
-        @apply !text-mauve;
-    }
+.hljs-symbol {
+    @apply !text-flamingo;
+}
 
-    .hljs-variable.language_ {
-        @apply !text-mauve;
-    }
+.hljs-variable {
+    @apply !text-mauve;
+}
 
-    .hljs-variable.constant_ {
-        @apply !text-peach;
-    }
+.hljs-variable.language_ {
+    @apply !text-mauve;
+}
 
-    .hljs-title {
-        @apply !text-blue;
-    }
+.hljs-variable.constant_ {
+    @apply !text-peach;
+}
 
-    .hljs-title.class_ {
-        @apply !text-yellow;
-    }
+.hljs-title {
+    @apply !text-blue;
+}
 
-    .hljs-title.function_ {
-        @apply !text-blue;
-    }
+.hljs-title.class_ {
+    @apply !text-yellow;
+}
 
-    .hljs-params {
-        @apply !text-text;
-    }
+.hljs-title.function_ {
+    @apply !text-blue;
+}
 
-    .hljs-comment {
-        @apply !text-surface2;
-    }
+.hljs-params {
+    @apply !text-text;
+}
 
-    .hljs-doctag {
-        @apply !text-red;
-    }
+.hljs-comment {
+    @apply !text-surface2;
+}
 
-    .hljs-meta {
-        @apply !text-peach;
-    }
+.hljs-doctag {
+    @apply !text-red;
+}
 
-    .hljs-section {
-        @apply !text-blue;
-    }
+.hljs-meta {
+    @apply !text-peach;
+}
 
-    .hljs-tag {
-        @apply !text-subtext0;
-    }
+.hljs-section {
+    @apply !text-blue;
+}
 
-    .hljs-name {
-        @apply !text-mauve;
-    }
+.hljs-tag {
+    @apply !text-subtext0;
+}
 
-    .hljs-attr {
-        @apply !text-blue;
-    }
+.hljs-name {
+    @apply !text-mauve;
+}
 
-    .hljs-attribute {
-        @apply !text-green;
-    }
+.hljs-attr {
+    @apply !text-blue;
+}
 
-    .hljs-bullet {
-        @apply !text-teal;
-    }
+.hljs-attribute {
+    @apply !text-green;
+}
 
-    .hljs-code {
-        @apply !text-green;
-    }
+.hljs-bullet {
+    @apply !text-teal;
+}
 
-    .hljs-emphasis {
-        @apply !text-red;
-        font-style: italic;
-    }
+.hljs-code {
+    @apply !text-green;
+}
 
-    .hljs-strong {
-        @apply !text-red;
-        font-weight: bold;
-    }
+.hljs-emphasis {
+    @apply !text-red;
+    font-style: italic;
+}
 
-    .hljs-formula {
-        @apply !text-teal;
-    }
+.hljs-strong {
+    @apply !text-red;
+    font-weight: bold;
+}
 
-    .hljs-link {
-        @apply !text-sapphire;
-    }
+.hljs-formula {
+    @apply !text-teal;
+}
 
-    .hljs-quote {
-        @apply !text-green;
-    }
+.hljs-link {
+    @apply !text-sapphire;
+}
 
-    .hljs-selector-tag {
-        @apply !text-yellow;
-    }
+.hljs-quote {
+    @apply !text-green;
+}
 
-    .hljs-selector-id {
-        @apply !text-blue;
-    }
+.hljs-selector-tag {
+    @apply !text-yellow;
+}
 
-    .hljs-selector-class {
-        @apply !text-teal;
-    }
+.hljs-selector-id {
+    @apply !text-blue;
+}
 
-    .hljs-selector-attr {
-        @apply !text-mauve;
-    }
+.hljs-selector-class {
+    @apply !text-teal;
+}
 
-    .hljs-selector-pseudo {
-        @apply !text-teal;
-    }
+.hljs-selector-attr {
+    @apply !text-mauve;
+}
 
-    .hljs-template-tag {
-        @apply !text-flamingo;
-    }
+.hljs-selector-pseudo {
+    @apply !text-teal;
+}
 
-    .hljs-template-variable {
-        @apply !text-flamingo;
-    }
+.hljs-template-tag {
+    @apply !text-flamingo;
+}
 
-    .hljs-addition {
-        @apply !text-green;
-    }
+.hljs-template-variable {
+    @apply !text-flamingo;
+}
 
-    .hljs-deletion {
-        @apply !text-red;
-    }
+.hljs-addition {
+    @apply !text-green;
+}
+
+.hljs-deletion {
+    @apply !text-red;
 }

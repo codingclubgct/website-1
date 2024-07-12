@@ -1,11 +1,10 @@
 import { Issue, Reaction } from "@/types/issues";
-import { githubPat, owner, repo } from "./constants";
-import { getTimeString } from "./getTimeString";
-import lookup from "@/data/lookup.json"
+import { Blog, Profile } from "@/types/types";
 import * as yup from "yup";
-import { Blogs as Blog, Profile } from "@/types/types";
-import { GetResponseDataTypeFromEndpointMethod } from "@octokit/types"
+import { githubPat, owner, repo, url } from "./constants";
+import { getTimeString } from "./getTimeString";
 import { octokit } from "./octokit";
+import { GetResponseDataTypeFromEndpointMethod } from "@octokit/types";
 
 export const getIssueNumberFromString = (slug: string) => slug.match(/\d+/)?.[0];
 
@@ -112,12 +111,13 @@ export async function getGithubDataforBlog(pathname: string): Promise<GithubData
 }
 
 export const getAllBlogs = async () => {
+    const lookup = await fetch(`${url}/data/lookup.json`).then(res => res.json()) as string[]
     const promises = lookup.map(async entry => {
         try {
-            const { profile, blogs } = await import(`@/data/${entry}`)
+            const { profile, blogs } = await fetch(`${url}/data/${entry}`).then(res => res.json())
             return blogEntrySchema.validateSync({ profile, blogs })
         } catch (e) {
-            // console.error(e)
+            console.error(e)
             return null
         }
     })
@@ -132,7 +132,6 @@ export const blogEntrySchema = yup.object<Entry>().shape({
         avatar: yup.string()
     }),
     blogs: yup.array().of(yup.object().shape({
-        title: yup.string().required(),
         folderName: yup.string().required(),
         folderSlug: yup.string().matches(/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/, "Incorrect format for a slug").required(),
         hidden: yup.boolean().default(false),
@@ -157,7 +156,7 @@ export const fetchRepo = async (url: string) => {
 }
 
 export const getBlogData = async (pathname: string) => {
-    const [nameSlug, folderSlug] = pathname.split("/")
+    const [nameSlug, folderSlug] = pathname.split("/").filter(Boolean)
     const blogs = await getAllBlogs()
     const user = blogs.find(entry => entry.profile.nameSlug === nameSlug)
     const blog = user?.blogs.find(blog => blog.folderSlug === folderSlug)
@@ -170,4 +169,99 @@ export const getBlogData = async (pathname: string) => {
 export const getRemoteSourceMetadata = (url: string) => {
     const [, owner, repo] = url.match(/github\.com\/([^\/]+)\/([^\/]+)/) ?? [];
     return { owner, repo }
+}
+
+export const replaceLast = (str: string, pattern: string | RegExp, replacement: string) => {
+    const match =
+        typeof pattern === 'string'
+            ? pattern
+            : (str.match(new RegExp(pattern.source, 'g')) || []).slice(-1)[0];
+    if (!match) return str;
+    const last = str.lastIndexOf(match);
+    return last !== -1
+        ? `${str.slice(0, last)}${replacement}${str.slice(last + match.length)}`
+        : str;
+};
+
+export type FileNode = {
+    type: "file",
+    name: string,
+    download_url: string | null,
+    path: string,
+    level: number,
+    absolutePath: string,
+}
+
+export type DirectoryNode = {
+    type: "dir",
+    name: string,
+    children: (FileNode | DirectoryNode)[],
+    path: string,
+    level: number,
+    absolutePath: string
+}
+
+export const fetchAllFilesForAllUsers = async () => {
+    const allFilesPromise = await getAllBlogs().then(allBlogs => allBlogs.map(async entry => {
+        const { profile, blogs } = entry
+        const data = []
+        for (const blog of blogs) {
+            const repo = await fetchRepo(blog.remoteSource)
+            if (!repo) return null
+            const files = await fetchAllFiles(repo)
+            data.push({
+                ...blog,
+                files: files
+            })
+        }
+        return { profile, blogs: data }
+
+    }))
+    return Promise.all(allFilesPromise).then(res => res.filter(Boolean) as { profile: Profile, blogs: (Blog & { files: DirectoryNode })[] }[])
+}
+
+const fetchAllFiles = async (repo: GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.get>) => {
+    const dfs = async (path: string = "", level: number = 0, parentAbsolutePath: string = ""): Promise<DirectoryNode> => {
+        const { data } = await octokit.repos.getContent({
+            owner: repo.owner.login,
+            repo: repo.name,
+            path
+        })
+
+        const currentDirName = path.split('/').pop() || ""
+        const absolutePath = parentAbsolutePath ? `${parentAbsolutePath}/${currentDirName}` : currentDirName
+
+        const node: DirectoryNode = {
+            type: "dir",
+            name: currentDirName,
+            children: [],
+            level,
+            path,
+            absolutePath
+        }
+
+        if (Array.isArray(data)) {
+            for (const file of data) {
+                if (file.type === "file" && file.name.endsWith(".md")) {
+                    node.children.push({
+                        type: "file",
+                        name: file.name,
+                        download_url: file.download_url,
+                        path: file.path,
+                        level: level + 1,
+                        absolutePath: `${absolutePath}/${file.name}`
+                    } as FileNode)
+                } else if (file.type === "dir") {
+                    const childNode = await dfs(file.path, level + 1, absolutePath)
+                    if (childNode.children.length > 0) {
+                        node.children.push(childNode)
+                    }
+                }
+            }
+        }
+
+        return node
+    }
+
+    return dfs()
 }

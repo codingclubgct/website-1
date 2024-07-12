@@ -5,9 +5,7 @@ export type Profile = {
     avatar?: string,
 }
 
-export type Blogs = {
-    title: string,
-    description: string,
+export type Blog = {
     folderName: string,
     folderSlug: string,
     remoteSource: string,

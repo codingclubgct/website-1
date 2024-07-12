@@ -1,0 +1,16 @@
+{
+    "profile": {
+        "github": "pavi143",
+        "name": "Pavithra",
+        "nameSlug": "pavithra"
+    },
+    "blogs": [
+        {
+            "folderName": "Design patterns",
+            "folderSlug": "design-patterns",
+            "remoteSource": "https://github.com/coding-club-gct/design-patterns/",
+            "issuesUrl": "https://github.com/useEffects/a2apoint/issues/1",
+            "hidden": true
+        }
+    ]
+}

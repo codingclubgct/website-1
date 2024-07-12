@@ -11,7 +11,7 @@
             "folderSlug": "a2apoint-project-report",
             "remoteSource": "https://github.com/useEffects/a2apoint",
             "issuesUrl": "https://github.com/useEffects/a2apoint/issues/1",
-            "hidden": true
+            "hidden": false
         }
     ]
 }

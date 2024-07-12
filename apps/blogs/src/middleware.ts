@@ -12,28 +12,28 @@ export async function middleware(request: Request) {
     requestHeaders.set('x-origin', origin);
     requestHeaders.set('x-pathname', pathname);
 
-    const segments = pathname.split('/').filter(Boolean);
+    // const segments = pathname.split('/').filter(Boolean);
 
-    if (segments.length >= 2 && !["_next", "api"].includes(segments[0])) {
-        requestHeaders.set('x-nameSlug', segments[0]);
-        requestHeaders.set('x-folderSlug', segments[1]);
+    // if (segments.length >= 2 && !["_next", "api"].includes(segments[0])) {
+    //     requestHeaders.set('x-nameSlug', segments[0]);
+    //     requestHeaders.set('x-folderSlug', segments[1]);
 
-        if (pathname.endsWith("README.md")) {
-            return NextResponse.redirect(url.href.replace("README.md", ""));
-        }
+    //     if (pathname.endsWith("README.md")) {
+    //         return NextResponse.redirect(url.href.replace("README.md", ""));
+    //     }
 
-        if (segments.length > 2) {
-            const [, , ...rest] = segments
-            const fileName = rest.join('/')
-            const ext = fileName.substring(fileName.lastIndexOf('.') + 1) || '';
-            if (ext && ext !== ".md") {
-                const asset = await fetchAssets(pathname)
-                if (asset) {
-                    return NextResponse.redirect(asset)
-                }
-            }
-        }
-    }
+    //     if (segments.length > 2) {
+    //         const [, , ...rest] = segments
+    //         const fileName = rest.join('/')
+    //         const ext = fileName.substring(fileName.lastIndexOf('.') + 1) || '';
+    //         if (ext && ext !== ".md") {
+    //             const asset = await fetchAssets(pathname)
+    //             if (asset) {
+    //                 return NextResponse.redirect(asset)
+    //             }
+    //         }
+    //     }
+    // }
 
     return NextResponse.next({
         request: {

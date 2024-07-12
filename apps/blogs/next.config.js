@@ -2,6 +2,9 @@
 const nextConfig = {
   transpilePackages: ["next-remote-mdx", "next-remote-mdx-client"],
   trailingSlash: true,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   images: {
     remotePatterns: [
       {

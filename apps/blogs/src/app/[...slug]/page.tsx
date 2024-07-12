@@ -20,7 +20,7 @@ const components: MDXComponents = {
     icon: () => <></>
 };
 
-// export async function generateStaticParams2() {
+// export async function generateStaticParams() {
 //     const allFilesForUsers = await fetchAllFilesForAllUsers();
 
 //     const traverse = (node: DirectoryNode | FileNode, profile: Profile, blog: Blog, parentPath: string = ""): { slug: string[] }[] => {
@@ -46,6 +46,7 @@ const components: MDXComponents = {
 export default async function Page({ params }: { params: { slug: string[] } }) {
 
     const allBlogs = await getAllBlogs()
+
     const [nameSlug, folderSlug] = params.slug
 
     const user = allBlogs.find(entry => entry.profile.nameSlug === nameSlug)

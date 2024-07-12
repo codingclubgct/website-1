@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import path from 'path-browserify';
 import { octokit } from './lib/octokit';
 import { fetchRepo, getAllBlogs } from './lib/helpers';
 
@@ -25,7 +24,8 @@ export async function middleware(request: Request) {
 
         if (segments.length > 2) {
             const [, , ...rest] = segments
-            const ext = path.extname(rest[rest.length - 1])
+            const fileName = rest.join('/')
+            const ext = fileName.substring(fileName.lastIndexOf('.') + 1) || '';
             if (ext && ext !== ".md") {
                 const asset = await fetchAssets(pathname)
                 if (asset) {

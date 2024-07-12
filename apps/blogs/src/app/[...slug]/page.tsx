@@ -45,8 +45,6 @@ const components: MDXComponents = {
 
 export default async function Page({ params }: { params: { slug: string[] } }) {
 
-    generateStaticParams2()
-
     const allBlogs = await getAllBlogs()
     const [nameSlug, folderSlug] = params.slug
 

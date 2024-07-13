@@ -2,7 +2,10 @@ import entries from "@/data/entries.json" ;
 import { Button } from "@mui/material";
 
 export default function Home() {
-  return <div className="flex flex-col gap-8 m-4 w-full">
+  return <div className="flex flex-col gap-4 m-4 w-full">
+    <div className="flex justify-center">
+        <p className="text-2xl">Welcome to Coding Club  Webring</p>
+    </div>
     {
       entries.map((data,i)=><div key={i} className="flex justify-around gap-4 m-4" >
        
@@ -13,7 +16,7 @@ export default function Home() {
         )
     }
     <div className="flex justify-center gap-8 m-8">
-      <Button >Next</Button>
+      <Button>Next</Button>
       <Button>Previous</Button>
     </div>
     

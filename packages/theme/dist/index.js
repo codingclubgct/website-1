@@ -6234,7 +6234,16 @@ var generateTailwindConfig = (colorScheme) => {
         dark: colorScheme.dark
       }),
       import_typography.default
-    ]
+    ],
+    theme: {
+      extend: {
+        typography: {
+          DEFAULT: {
+            css: {}
+          }
+        }
+      }
+    }
   };
 };
 // Annotate the CommonJS export names for ESM import in node:

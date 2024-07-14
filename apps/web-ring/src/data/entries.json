@@ -1,19 +1,22 @@
 [
     {
        
+        "portfolio" : "https://webring.codingclubgct.in/",
+        "slug" : "webring"
+    },
+
+    {
+       
+        "portfolio" : "https://joelsamuel.me",
+        "slug" : "useEffects"
+    },
+
+    {
+       
         "portfolio" : "https://pavithra.tech/",
         "slug" : "pavithra"
-    },
-    {
-       
-        "portfolio" : "https://codingclubgct.in/",
-        "slug" : "codingclubgct"
-    },
-    {
-       
-        "portfolio" : "https://google.com",
-        "slug" : "goog"
     }
+   
 
 
 

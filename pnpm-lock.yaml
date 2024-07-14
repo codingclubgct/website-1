@@ -7,13 +7,14 @@ settings:
 importers:
 
   .:
+    dependencies:
+      turbo:
+        specifier: latest
+        version: 1.12.2
     devDependencies:
       prettier:
         specifier: ^3.1.1
         version: 3.1.1
-      turbo:
-        specifier: latest
-        version: 1.12.2
 
   apps/blogs:
     dependencies:
@@ -12533,11 +12534,11 @@ snapshots:
 
   '@types/react-reconciler@0.26.7':
     dependencies:
-      '@types/react': 18.2.25
+      '@types/react': 18.2.51
 
   '@types/react-reconciler@0.28.8':
     dependencies:
-      '@types/react': 18.2.25
+      '@types/react': 18.2.51
 
   '@types/react-transition-group@4.4.10':
     dependencies:

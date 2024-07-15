@@ -20,27 +20,27 @@ const components: MDXComponents = {
     icon: () => <></>
 };
 
-// export async function generateStaticParams() {
-//     const allFilesForUsers = await fetchAllFilesForAllUsers();
+export async function generateStaticParams() {
+    const allFilesForUsers = await fetchAllFilesForAllUsers();
 
-//     const traverse = (node: DirectoryNode | FileNode, profile: Profile, blog: Blog, parentPath: string = ""): { slug: string[] }[] => {
-//         if (node.type === 'file') {
-//             const finalSlug = node.absolutePath.replace("README.md", "")
-//             return [{
-//                 slug: [profile.nameSlug, blog.folderSlug, ...finalSlug.split('/')]
-//             }];
-//         } else if (node.type === 'dir') {
-//             return node.children.flatMap(child => traverse(child, profile, blog, `${parentPath}/${node.name}`));
-//         }
-//         return [];
-//     };
+    const traverse = (node: DirectoryNode | FileNode, profile: Profile, blog: Blog, parentPath: string = ""): { slug: string[] }[] => {
+        if (node.type === 'file') {
+            const finalSlug = node.absolutePath.replace("README.md", "")
+            return [{
+                slug: [profile.nameSlug, blog.folderSlug, ...finalSlug.split('/')]
+            }];
+        } else if (node.type === 'dir') {
+            return node.children.flatMap(child => traverse(child, profile, blog, `${parentPath}/${node.name}`));
+        }
+        return [];
+    };
 
-//     const params = allFilesForUsers.flatMap(({ profile, blogs }) =>
-//         blogs.flatMap(blog => traverse(blog.files, profile, blog))
-//     );
+    const params = allFilesForUsers.flatMap(({ profile, blogs }) =>
+        blogs.flatMap(blog => traverse(blog.files, profile, blog))
+    );
 
-//     return params;
-// }
+    return params;
+}
 
 
 export default async function Page({ params }: { params: { slug: string[] } }) {

@@ -9,7 +9,7 @@ import { plugins, TocItem } from "@ipikuka/plugins";
 import { serialize } from "next-mdx-remote-client/serialize";
 import { notFound } from "next/navigation";
 import { NextResponse } from "next/server";
-import { Divider } from "@mui/material";
+import { Button, Divider, Drawer } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import { Blog, Profile } from "@/types/types";
@@ -17,6 +17,7 @@ import CommentBox from "@/components/commentBox";
 import Accordion from "@/components/accordion";
 import { ReactNode } from "react";
 import { UserBox } from "@/components/user-box";
+import MobileHeader from "@/components/mobile";
 
 const components: MDXComponents = {
     pre: Pre,
@@ -60,7 +61,6 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
     if (!repo) return new NextResponse("Internal Server Error", { status: 500 })
 
     const allFiles = await fetchAllFiles(repo, blog.basePath)
-    console.log(allFiles)
     const markdown = await fetchMarkdown(params, repo, blog.basePath)
 
     if (!markdown) return notFound()
@@ -80,17 +80,32 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
 
     const rootLevelHeadings = toc?.filter(item => item.parent === "root") ?? []
 
-    return <div className="flex w-full">
-        <div className="w-[300px] p-4 sticky h-screen top-0 flex flex-col justify-between">
+    const Chapters = () => {
+        return <div className="flex w-[300px] p-4 sticky h-screen top-0 flex-col justify-between">
             <div>
                 <p className="text-xl font-bold py-4">Chapters</p>
                 <Link href={`/${nameSlug}/${folderSlug}`} className="no-underline text-subtext0 hover:bg-surface0 hover:text-text p-2 block">{capitalizeFolderSlug(folderSlug)}</Link>
                 <Navbar node={allFiles} />
             </div>
-            <UserBox />
+            <div className="mt-auto mb-0">
+                <UserBox />
+            </div>
         </div>
-        <Divider orientation="vertical" className="self-stretch h-auto" />
+    }
+
+    const TOCComponent = () => {
+        return <div className="w-[300px] my-4 sticky h-screen top-0">
+            <TOC toc={rootLevelHeadings} />
+        </div>
+    }
+
+    return <div className="flex w-full">
+        <div className="hidden md:block">
+            <Chapters />
+        </div>
+        <Divider orientation="vertical" className="self-stretch h-auto hidden md:block" />
         <div className="flex-grow flex flex-col gap-12 py-8">
+            <MobileHeader Chapter={<Chapters />} TOC={<TOCComponent />} />
             {isFrontMatterData(frontmatter) && <BlogHeader frontmatter={frontmatter} repo={repo} />}
             <Wrapper>
                 <div className="mx-auto prose my-4 px-4 max-w-none">
@@ -111,21 +126,21 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
             <Divider />
             <Wrapper>
                 {blog.issuesUrl && <div className="">
-                    <div className="p-4 max-w-4xl mx-auto">
+                    <div className="p-4 md:mx-auto">
                         <CommentBox issuesUrl={blog.issuesUrl} />
                     </div>
                 </div>}
             </Wrapper>
         </div>
-        <Divider orientation="vertical" className="self-stretch h-auto" />
-        <div className="w-[300px] my-4 sticky h-screen top-0">
-            <TOC toc={rootLevelHeadings} />
+        <Divider orientation="vertical" className="self-stretch h-auto hidden md:block" />
+        <div className="hidden md:block">
+            <TOCComponent />
         </div>
-    </div >
+    </div>
 }
 
 const Wrapper = ({ children }: { children: ReactNode }) => {
-    return <div className="container mx-auto">
+    return <div className="md:container w-full mx-auto">
         <div className="max-w-4xl mx-auto">
             {children}
         </div>
@@ -135,7 +150,7 @@ const Wrapper = ({ children }: { children: ReactNode }) => {
 const TOC = ({ toc }: { toc: TocItem[] }) => {
     return <div className="p-4 flex flex-col gap-8">
         <p className="text-xl font-bold">Table of contents</p>
-        <div>
+        <div className="flex flex-col gap-2">
             {toc.map((item, i) => {
                 return <div key={i} className="">
                     <a href={item.href} className="flex gap-4 no-underline">

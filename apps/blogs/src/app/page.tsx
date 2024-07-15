@@ -12,7 +12,7 @@ export default function Home() {
       </div>
       <div className="w-full p-4 rounded">
         <p className=""> Want to blog ? </p>
-        <p> Head over to our <Link className="text-blue" href="/how-to-blog"> how to blog </Link> </p>
+        <p> Head over to our <Link className="text-blue" href="/_/how-to-blog"> how to blog </Link> </p>
       </div>
     </div>
   )

@@ -25,3 +25,11 @@ i {
 .prose img {
     @apply !w-full
 }
+
+.prose code {
+    @apply !bg-surface0 p-1 rounded
+}
+
+.custom-pre code {
+    @apply !bg-transparent
+}

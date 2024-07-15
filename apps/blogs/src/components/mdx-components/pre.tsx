@@ -61,7 +61,7 @@ export default function Pre(props: DetailedHTMLProps<HTMLAttributes<HTMLPreEleme
     const additionalStyles = (text.match(/\n/g) || []).length > 1 ? "top-4" : "top-1/2 -translate-y-1/2"
 
     return (
-        <div className="relative w-full">
+        <div className="relative w-full custom-pre">
             <pre className={language ? `language-${language}` : "language-plaintext"} {...rest}>
                 {children}
             </pre>

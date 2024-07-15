@@ -21,13 +21,14 @@ export default function CommentBox({ issuesUrl }: { issuesUrl: string }) {
     const [newComment, setNewComment] = useState("")
     const [newCommentPreview, setNewCommentPreview] = useState(false)
 
-    const { owner, repo } = getRemoteSourceMetadata(issuesUrl)
+    const [owner, repo] = issuesUrl.split("/").slice(3, 5);
     const issueNumber = issuesUrl.split("/").pop()
 
     const handleUpdate = async (comment: GetResponseDataTypeFromEndpointMethod<typeof octokit.issues.getComment>) => {
         fetch("/api/comments", {
             method: "PATCH",
-            body: JSON.stringify({ body: comment.body, comment_id: comment.id, owner, repo })
+            body: JSON.stringify({ comment_id: comment.id, owner, repo }),
+            cache: "no-cache",
         }).then(() => {
             setComments(prev => prev.map(p => p.id === comment.id ? ({ ...p, body: comment.body }) : p))
             setCurrent(null)
@@ -39,7 +40,8 @@ export default function CommentBox({ issuesUrl }: { issuesUrl: string }) {
             body: JSON.stringify({
                 comment_id: comment.id,
                 owner, repo
-            })
+            }),
+            cache: "no-cache",
         }).then(() => {
             setComments(comments => comments.filter(({ id }) => id !== comment.id))
         })
@@ -53,7 +55,8 @@ export default function CommentBox({ issuesUrl }: { issuesUrl: string }) {
                 owner,
                 repo,
                 issue_number: issueNumber,
-            })
+            }),
+            cache: "no-cache",
         }).then(res => res.json()).then((json) => {
             setComments(prev => [...prev, json])
             setNewComment("")

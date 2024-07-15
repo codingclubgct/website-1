@@ -13,18 +13,18 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-    const { id, owner, repo } = await req.json()
+    const { comment_id, owner, repo } = await req.json()
     const { data } = await octokit.issues.deleteComment({
-        owner, repo, comment_id: Number(id)
+        owner, repo, comment_id: Number(comment_id)
     })
     return NextResponse.json(data)
 }
 
 export async function POST(req: Request) {
-    const { body, owner, repo, issueNumber } = await req.json()
+    const { body, owner, repo, issue_number } = await req.json()
 
     const { data } = await octokit.issues.createComment({
-        owner, repo, issue_number: Number(issueNumber), body
+        owner, repo, issue_number: Number(issue_number), body
     })
     return NextResponse.json(data)
 }

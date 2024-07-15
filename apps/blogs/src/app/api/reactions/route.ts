@@ -15,6 +15,7 @@ export async function DELETE(req: Request) {
 
 export async function POST(req: Request) {
     const { content, comment_id, owner, repo } = await req.json()
+    console.log({ content, comment_id, owner, repo })
     const { data } = await octokit.reactions.createForIssueComment({
         comment_id: Number(comment_id),
         content,

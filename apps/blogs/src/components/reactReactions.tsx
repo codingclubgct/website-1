@@ -97,6 +97,8 @@ export default function ReactReactions({ comment, owner, repo }: { comment: GetR
                 body: JSON.stringify({
                     content,
                     comment_id: comment.id,
+                    owner,
+                    repo
                 })
             }).then((res) => {
                 setReactions(prev => prev ? ({ ...prev, [content]: prev[content] + 1, total_count: prev.total_count + 1 }) : prev)

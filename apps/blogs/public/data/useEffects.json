@@ -6,11 +6,16 @@
     },
     "blogs": [
         {
-            "title": "A2APoint project report",
-            "folderName": "a2apoint-project-report",
             "folderSlug": "a2apoint-project-report",
             "remoteSource": "https://github.com/useEffects/a2apoint",
             "issuesUrl": "https://github.com/useEffects/a2apoint/issues/1",
+            "hidden": false
+        },
+        {
+            "folderSlug": "building-universal-apps",
+            "remoteSource": "https://github.com/useEffects/a2apoint",
+            "issuesUrl": "https://github.com/useEffects/a2apoint/issues/2",
+            "basePath": "methodology",
             "hidden": false
         }
     ]

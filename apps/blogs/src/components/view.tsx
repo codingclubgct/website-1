@@ -7,6 +7,8 @@ import { GetResponseDataTypeFromEndpointMethod } from "@octokit/types"
 import { headers } from "next/headers"
 import { ReactNode } from "react"
 import Accordion, { AccordionLabel } from "./accordion"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { Logo } from "./logo"
 
 
 const links = [
@@ -49,34 +51,44 @@ const howTo = [
 ]
 
 export default async function View({ children }: { children: ReactNode }) {
-
-    return <div className="w-full">
-        <div className="flex min-h-screen">
-            <div className="flex-1 max-w-[300px]">
-                <Navbar />
-            </div>
-            <Divider className="self-stretch h-auto" orientation="vertical" />
-            {children}
-        </div>
-        <div>
-        </div>
+    return <div className="min-h-screen w-full">
+        {children}
+        <Footer />
     </div>
 }
 
-const Navbar = async () => {
-    const allFiles = await fetchAllFilesForAllUsers()
-    const allVisibleFiles = allFiles.map(entry => ({
-        profile: entry.profile,
-        blogs: entry.blogs.filter(blog => !blog.hidden)
-    })).filter(entry => entry.blogs.length > 0)
-
-    return <div className="flex flex-col gap-8 p-4">
-        {allVisibleFiles.map((entry, i) => <div key={i} className="flex flex-col gap-4">
-            <AccordionLabel node={entry.blogs[0].files} useFolderSlug />
-            <Divider />
-            {entry.blogs.map((blog, j) => <div key={j} className="flex flex-col gal-4">
-                {blog.files.children.map((node, k) => <Accordion key={k} node={node} />)}
-            </div>)}
-        </div>)}
+const Footer = () => {
+    return <div className="w-full">
+        <Divider />
+        <div className="px-4 mx-auto container flex flex-col md:flex-row justify-evenly gap-8 md:gap-0 py-8" id="#about">
+            <div className="flex flex-col justify-center">
+                <p> Blogs from <span className="text-yellow text-sm"> Coding Club GCT </span> </p>
+                <p className="text-subtext0 text-sm"> Ideas Unleashed</p>
+                <Logo />
+            </div>
+            <div className="flex flex-col gap-2">
+                <p> Useful links </p>
+                {links.map(({ href, label }, i) => <a key={i} href={href} target="_blank" className="text-subtext0 no-underline text-sm">
+                    {label}
+                </a>)}
+            </div>
+            <div className="flex flex-col gap-2">
+                <p> Connect with us </p>
+                <div className="flex gap-4">
+                    {socials.map(({ icon, href }, i) => <a className="text-subtext0 no-underline" key={i} href={href}>
+                        <FontAwesomeIcon icon={icon} className="text-subtext0 w-4 h-4" />
+                    </a>)}
+                </div>
+            </div>
+            <div className="flex flex-col gap-2">
+                <p> Support </p>
+                {howTo.map(({ href, label }, i) => <a key={i} href={href} target="_blank" className="text-subtext0 no-underline text-sm">
+                    {label}
+                </a>)}
+            </div>
+        </div>
+        <div className="flex justify-center mb-4">
+            <a className="text-center no-underline" href="https://github.com/coding-club-gct/blogs"> Source Code </a>
+        </div>
     </div>
 }

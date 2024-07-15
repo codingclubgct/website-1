@@ -6,7 +6,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { DirectoryNode, FileNode } from "@/lib/helpers";
+import { DirectoryNode, FileNode, capitalizeFolderSlug } from "@/lib/helpers";
 import { cn } from "cn-func";
 
 export default function AccordionComponent({ node }: { node: DirectoryNode | FileNode }) {
@@ -58,7 +58,7 @@ export default function AccordionComponent({ node }: { node: DirectoryNode | Fil
                     <Accordion expanded={isOpen} onChange={() => setIsOpen(!isOpen)} className="bg-transparent">
                         <AccordionSummary expandIcon={isOpen ? <ArrowDropDownIcon className="text-yellow" /> : <ArrowDownwardIcon className="text-yellow" />}>
                             <Link href={`/${nameSlug}/${folderSlug}/${node.absolutePath}`} className={cn("no-underline text-subtext0", isActive && "bg-surface0 text-text")}>
-                                {node.name.replace(".md", "")}
+                                {capitalizeFolderSlug(node.name.replace(".md", ""))}
                             </Link>
                         </AccordionSummary>
                         <AccordionDetails>
@@ -78,7 +78,7 @@ export const AccordionLabel = ({ node, useFolderSlug }: { node: DirectoryNode | 
     const [nameSlug, folderSlug, ...segments] = pathname.split("/").filter(Boolean);
     const isActive = segments.join("/") === node.absolutePath;
 
-    return <Link href={`/${nameSlug}/${folderSlug}/${node.absolutePath}`} className={cn("no-underline text-subtext0 p-2 hover:bg-surface0 block w-full rounded", isActive && "bg-surface0 text-text")}>
-        {useFolderSlug ? folderSlug : node.name.replace(".md", "")}
+    return <Link href={`/${nameSlug}/${folderSlug}/${node.absolutePath}`} className={cn("no-underline text-subtext0 p-2 hover:bg-surface0 block w-full", isActive && "bg-surface0 text-text")}>
+        {capitalizeFolderSlug(useFolderSlug ? folderSlug : node.name.replace(".md", ""))}
     </Link>
 }

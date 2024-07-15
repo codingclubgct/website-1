@@ -59,7 +59,6 @@ export const blogEntrySchema = yup.object<Entry>().shape({
         avatar: yup.string()
     }),
     blogs: yup.array().of(yup.object().shape({
-        folderName: yup.string().required(),
         folderSlug: yup.string().matches(/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/, "Incorrect format for a slug").required(),
         hidden: yup.boolean().default(false),
         remoteSource: yup.string().url().required(),
@@ -135,7 +134,7 @@ export const fetchAllFilesForAllUsers = async () => {
         for (const blog of blogs) {
             const repo = await fetchRepo(blog.remoteSource)
             if (!repo) return null
-            const files = await fetchAllFiles(repo)
+            const files = await fetchAllFiles(repo, blog.basePath)
             data.push({
                 ...blog,
                 files: files
@@ -147,8 +146,10 @@ export const fetchAllFilesForAllUsers = async () => {
     return Promise.all(allFilesPromise).then(res => res.filter(Boolean) as { profile: Profile, blogs: (Blog & { files: DirectoryNode })[] }[])
 }
 
-const fetchAllFiles = async (repo: GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.get>) => {
-    const dfs = async (path: string = "", level: number = 0, parentAbsolutePath: string = ""): Promise<DirectoryNode> => {
+export const fetchAllFiles = async (repo: GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.get>, basePath: string = "") => {
+
+    const dfs = async (path: string = basePath, level: number = 0, parentAbsolutePath: string = ""): Promise<DirectoryNode> => {
+
         const { data } = await octokit.repos.getContent({
             owner: repo.owner.login,
             repo: repo.name,
@@ -156,7 +157,11 @@ const fetchAllFiles = async (repo: GetResponseDataTypeFromEndpointMethod<typeof 
         })
 
         const currentDirName = path.split('/').pop() || ""
-        const absolutePath = parentAbsolutePath ? `${parentAbsolutePath}/${currentDirName}` : currentDirName
+        let absolutePath = parentAbsolutePath ? `${parentAbsolutePath}/${currentDirName}` : currentDirName
+
+        if (basePath) {
+            absolutePath = absolutePath.replace(new RegExp(`^${basePath}/?`), '').replace(/^\/+/, '');
+        }
 
         const node: DirectoryNode = {
             type: "dir",
@@ -170,13 +175,17 @@ const fetchAllFiles = async (repo: GetResponseDataTypeFromEndpointMethod<typeof 
         if (Array.isArray(data)) {
             for (const file of data) {
                 if (file.type === "file" && file.name.endsWith(".md")) {
+                    let fileAbsolutePath = `${absolutePath}/${file.name}`.replace(/^\/+/, '');
+                    if (basePath) {
+                        fileAbsolutePath = fileAbsolutePath.replace(new RegExp(`^${basePath}/?`), '').replace(/^\/+/, '');
+                    }
                     node.children.push({
                         type: "file",
                         name: file.name,
                         download_url: file.download_url,
                         path: file.path,
                         level: level + 1,
-                        absolutePath: `${absolutePath}/${file.name}`
+                        absolutePath: fileAbsolutePath
                     } as FileNode)
                 } else if (file.type === "dir") {
                     const childNode = await dfs(file.path, level + 1, absolutePath)
@@ -191,4 +200,11 @@ const fetchAllFiles = async (repo: GetResponseDataTypeFromEndpointMethod<typeof 
     }
 
     return dfs()
+}
+
+export const capitalizeFolderSlug = (folderSlug: string) => {
+    return folderSlug.split("-").map((word, i) => {
+        if (i !== 0) return word
+        return word[0].toUpperCase() + word.slice(1)
+    }).join(" ")
 }

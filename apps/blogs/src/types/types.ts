@@ -6,9 +6,9 @@ export type Profile = {
 }
 
 export type Blog = {
-    folderName: string,
     folderSlug: string,
     remoteSource: string,
     hidden: boolean,
+    basePath?: string,
     issuesUrl?: string,
 }

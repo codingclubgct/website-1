@@ -1,5 +1,5 @@
 import Pre from "@/components/mdx-components/pre";
-import { getAllBlogs, fetchRepo, fetchAllFilesForAllUsers, DirectoryNode, FileNode } from "@/lib/helpers";
+import { getAllBlogs, fetchRepo, fetchAllFilesForAllUsers, DirectoryNode, FileNode, fetchAllFiles, capitalizeFolderSlug } from "@/lib/helpers";
 import { octokit } from "@/lib/octokit";
 import { GetResponseDataTypeFromEndpointMethod, GetResponseTypeFromEndpointMethod } from "@octokit/types";
 import { MDXComponents } from "mdx/types";
@@ -14,6 +14,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Blog, Profile } from "@/types/types";
 import CommentBox from "@/components/commentBox";
+import Accordion from "@/components/accordion";
+import { ReactNode } from "react";
+import { UserBox } from "@/components/user-box";
 
 const components: MDXComponents = {
     pre: Pre,
@@ -55,7 +58,9 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
 
     const repo = await fetchRepo(blog.remoteSource)
     if (!repo) return new NextResponse("Internal Server Error", { status: 500 })
-    const markdown = await fetchMarkdown(params, repo)
+
+    const allFiles = await fetchAllFiles(repo, blog.basePath)
+    const markdown = await fetchMarkdown(params, repo, blog.basePath)
 
     if (!markdown) return notFound()
 
@@ -74,44 +79,60 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
 
     const rootLevelHeadings = toc?.filter(item => item.parent === "root") ?? []
 
-    return <div>
-        <div className="flex">
-            <div className="container flex flex-row justify-center">
-                <div className="w-full">
-                    {isFrontMatterData(frontmatter) ? <BlogHeader frontmatter={frontmatter} repo={repo} /> : <div className="h-8" />}
-                    <div className="mx-auto prose my-4 px-4">
-                        <MDXRemote
-                            source={markdown}
-                            components={components}
-                            options={{
-                                mdxOptions: {
-                                    ...plugins({
-                                        format: "md"
-                                    })
-                                },
-                                parseFrontmatter: true
-                            }}
-                        />
-                    </div>
-                </div>
+    return <div className="flex w-full">
+        <div className="w-[300px] p-4 sticky h-screen top-0 flex flex-col justify-between">
+            <div>
+                <p className="text-xl font-bold py-4">Chapters</p>
+                <Link href={`/${nameSlug}/${folderSlug}`} className="no-underline text-subtext0 hover:bg-surface0 hover:text-text p-2 block">{capitalizeFolderSlug(folderSlug)}</Link>
+                <Navbar node={allFiles} />
             </div>
-            <Divider orientation="vertical" className="self-stretch h-auto" />
-            <div className="flex-1 max-w-[300px] my-4">
-                <TOC toc={rootLevelHeadings} />
-            </div>
+            <UserBox />
         </div>
-        {blog.issuesUrl &&
-            <div className="">
-                <Divider className="mb-12" />
-                <div className="p-4">
-                    <CommentBox issuesUrl={blog.issuesUrl} />
+        <Divider orientation="vertical" className="self-stretch h-auto" />
+        <div className="flex-grow flex flex-col gap-12 py-8">
+            {isFrontMatterData(frontmatter) && <BlogHeader frontmatter={frontmatter} repo={repo} />}
+            <Wrapper>
+                <div className="mx-auto prose my-4 px-4 max-w-none">
+                    <MDXRemote
+                        source={markdown}
+                        components={components}
+                        options={{
+                            mdxOptions: {
+                                ...plugins({
+                                    format: "md"
+                                })
+                            },
+                            parseFrontmatter: true
+                        }}
+                    />
                 </div>
-            </div>}
+            </Wrapper>
+            <Divider />
+            <Wrapper>
+                {blog.issuesUrl && <div className="">
+                    <div className="p-4 max-w-4xl mx-auto">
+                        <CommentBox issuesUrl={blog.issuesUrl} />
+                    </div>
+                </div>}
+            </Wrapper>
+        </div>
+        <Divider orientation="vertical" className="self-stretch h-auto" />
+        <div className="w-[300px] my-4 sticky h-screen top-0">
+            <TOC toc={rootLevelHeadings} />
+        </div>
+    </div >
+}
+
+const Wrapper = ({ children }: { children: ReactNode }) => {
+    return <div className="container mx-auto">
+        <div className="max-w-4xl mx-auto">
+            {children}
+        </div>
     </div>
 }
 
 const TOC = ({ toc }: { toc: TocItem[] }) => {
-    return <div className="pl-4 flex flex-col gap-8 py-8">
+    return <div className="p-4 flex flex-col gap-8">
         <p className="text-xl font-bold">Table of contents</p>
         <div>
             {toc.map((item, i) => {
@@ -126,16 +147,22 @@ const TOC = ({ toc }: { toc: TocItem[] }) => {
     </div>
 }
 
+
+const Navbar = async ({ node }: { node: DirectoryNode }) => {
+    return <div className="">
+        {node.children.map((leaf, k) => <Accordion key={k} node={leaf} />)}
+    </div>
+}
+
 const BlogHeader = async ({ frontmatter, repo }: { frontmatter: FrontMatterData, repo: GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.get> }) => {
     const { title, cover, tags, read } = frontmatter
     const contributors = await fetchRepoContributors(repo)
     const finalContributors = contributors.filter(contributor => contributor.type === "User")
-
     const finalTags = tags.split(",").map(tag => tag.trim())
-
     const finalCoverImage = cover.startsWith("http") ? cover : `https://raw.githubusercontent.com/${repo.owner.login}/${repo.name}/main/${cover}`
+
     return <div className="w-full py-4 flex flex-col gap-8">
-        <div className="flex flex-col gap-8 [&>*]:px-4">
+        <div className="flex flex-col gap-8 [&>*]:px-4  max-w-4xl mx-auto">
             <p className="text-3xl md:text-5xl font-bold">{title}</p>
             <img src={finalCoverImage} className="w-full object-contain !px-0" />
             <div className="flex flex-wrap gap-4 items-center">
@@ -143,7 +170,7 @@ const BlogHeader = async ({ frontmatter, repo }: { frontmatter: FrontMatterData,
             </div>
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
                 <p>Read time: {read}</p>
-                <div className="flex flex-col gap-2 min-w-[300px]">
+                <div className="flex flex-col gap-2 md:min-w-[300px]">
                     <p className="">Brought to you by,</p>
                     <div className="flex flex-col md:flex-row gap-4 items-center">
                         {finalContributors.map((contributor, i) => <div key={i} className="flex-col gap-2">
@@ -160,7 +187,7 @@ const BlogHeader = async ({ frontmatter, repo }: { frontmatter: FrontMatterData,
     </div>
 }
 
-const fetchMarkdown = async (params: { slug: string[] }, repo: GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.get>) => {
+const fetchMarkdown = async (params: { slug: string[] }, repo: GetResponseDataTypeFromEndpointMethod<typeof octokit.repos.get>, basePath: string = "") => {
     const [, , ...rest] = params.slug
 
     const filePath = rest.join("/")
@@ -170,7 +197,7 @@ const fetchMarkdown = async (params: { slug: string[] }, repo: GetResponseDataTy
         const { data } = await octokit.repos.getContent({
             owner: repo.owner.login,
             repo: repo.name,
-            path: pathToSearch
+            path: basePath + pathToSearch
         }) as GetResponseTypeFromEndpointMethod<typeof octokit.repos.getContent>
         if (!Array.isArray(data)) {
             const content = await downloadContent(data.download_url!)

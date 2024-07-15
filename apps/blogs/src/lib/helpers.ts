@@ -54,12 +54,12 @@ export const getAllBlogs = async () => {
 export const blogEntrySchema = yup.object<Entry>().shape({
     profile: yup.object().shape({
         name: yup.string().required(),
-        nameSlug: yup.string().matches(/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/, "Incorrect format for a slug").required(),
+        nameSlug: yup.string().required(),
         github: yup.string().required(),
         avatar: yup.string()
     }),
     blogs: yup.array().of(yup.object().shape({
-        folderSlug: yup.string().matches(/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/, "Incorrect format for a slug").required(),
+        folderSlug: yup.string().matches(/^[A-Za-z0-9]+(?:[_-][A-Za-z0-9]+)*$/, "Incorrect format for a slug").required(),
         hidden: yup.boolean().default(false),
         remoteSource: yup.string().url().required(),
         issuesUrl: yup.string().url()

@@ -1,0 +1,15 @@
+{
+    "profile": {
+        "github": "coding-club-gct",
+        "name": "Coding club gct",
+        "nameSlug": "_"
+    },
+    "blogs": [
+        {
+            "folderSlug": "how-to-blog",
+            "remoteSource": "https://github.com/coding-club-gct/front-gate",
+            "issuesUrl": "https://github.com/useEffects/a2apoint/issues/1",
+            "basePath": "blogs/how-to-blog"
+        }
+    ]
+}

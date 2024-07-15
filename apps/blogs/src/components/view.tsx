@@ -61,7 +61,6 @@ export default async function View({ children }: { children: ReactNode }) {
             {children}
         </div>
         <div>
-
         </div>
     </div>
 }

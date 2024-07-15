@@ -1,7 +1,6 @@
 "use client"
 
 import { CatppuccinContext } from "@/context/catppuccin"
-import { githubPat } from "@/lib/constants"
 import { Issue, Reaction } from "@/types/issues"
 import { faHandsClapping } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"

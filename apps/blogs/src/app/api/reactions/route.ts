@@ -1,40 +1,41 @@
-import { githubPat, owner, repo } from "@/lib/constants";
-import { _getReactions } from "@/lib/helpers";
-import { Issue, Reaction } from "@/types/issues";
+import { octokit } from "@/lib/octokit";
 import { NextResponse } from "next/server";
 
 export async function DELETE(req: Request) {
-    const { slug, id } = await req.json()
-
-    const res = fetch(`https://api.github.com/repos/${owner}/${repo}/${slug}/reactions/${id}`, {
-        method: "DELETE",
-        headers: {
-            "Authorization": `Bearer ${githubPat}`
-        }
+    const { comment_id, owner, repo, reaction_id } = await req.json()
+    const { data } = await octokit.reactions.deleteForIssueComment({
+        comment_id: Number(comment_id),
+        owner,
+        repo,
+        reaction_id: Number(reaction_id)
     })
-    return NextResponse.json(res)
+
+    return NextResponse.json(data)
 }
 
 export async function POST(req: Request) {
-    const { content, slug } = await req.json()
-
-    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/${slug}/reactions`, {
-        method: "POST",
-        headers: {
-            "Authorization": `Bearer ${githubPat}`
-        }, body: JSON.stringify({
-            content
-        })
+    const { content, comment_id, owner, repo } = await req.json()
+    const { data } = await octokit.reactions.createForIssueComment({
+        comment_id: Number(comment_id),
+        content,
+        owner,
+        repo
     })
-    return res
+    return NextResponse.json(data)
 }
 
 export async function GET(req: Request) {
+
     const url = new URL(req.url)
-    const slug = url.searchParams.get("slug")
-    if (!slug) {
-        return NextResponse.json({ error: "Slug is required" }, { status: 400 })
-    }
-    const data = await _getReactions(slug)
+    const owner = url.searchParams.get("owner")
+    const repo = url.searchParams.get("repo")
+    const comment_id = url.searchParams.get("comment_id")
+
+    if (!owner || !repo || !comment_id) return NextResponse.json({ error: "owner, repo and comment_id are required" }, { status: 400 })
+
+    const { data } = await octokit.reactions.listForIssueComment({
+        owner, repo, comment_id: Number(comment_id)
+    })
+
     return NextResponse.json(data)
 }

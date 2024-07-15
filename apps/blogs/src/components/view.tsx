@@ -49,8 +49,6 @@ const howTo = [
 ]
 
 export default async function View({ children }: { children: ReactNode }) {
-    const headersList = headers()
-    const url = new URL(headersList.get("x-url")!)
 
     return <div className="w-full">
         <div className="flex min-h-screen">

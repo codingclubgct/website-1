@@ -58,10 +58,6 @@ export default function Pre(props: DetailedHTMLProps<HTMLAttributes<HTMLPreEleme
         }
     }, [])
 
-    useEffect(() => {
-        console.log(text, ready)
-    }, [text, ready])
-
     const additionalStyles = (text.match(/\n/g) || []).length > 1 ? "top-4" : "top-1/2 -translate-y-1/2"
 
     return (

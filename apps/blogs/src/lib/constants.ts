@@ -4,7 +4,4 @@ export const githubSecret = process.env.GITHUB_SECRET
 export const nextAuthUrl = process.env.NEXTAUTH_URL
 export const nextAuthSecret = process.env.NEXTAUTH_SECRET
 
-export const url = process.env.NODE_ENV === "production" ? "https://blogs.codingclubgct.in" : "http://localhost:3000"
-
-export const owner = "coding-club-gct"
-export const repo = "front-gate"
+export const url = process.env.NODE_ENV === "production" ? "https://blogs.codingclubgct.in" : "http://localhost:3001"

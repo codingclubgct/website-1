@@ -111,16 +111,18 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
 }
 
 const TOC = ({ toc }: { toc: TocItem[] }) => {
-    return <div className="pl-8 flex flex-col gap-8 py-8">
+    return <div className="pl-4 flex flex-col gap-8 py-8">
         <p className="text-xl font-bold">Table of contents</p>
-        {toc.map((item, i) => {
-            return <div key={i} className="">
-                <a href={item.href} className="flex gap-4 no-underline">
-                    <span>{i + 1}</span>
-                    <span>{item.value}</span>
-                </a>
-            </div>
-        })}
+        <div>
+            {toc.map((item, i) => {
+                return <div key={i} className="">
+                    <a href={item.href} className="flex gap-4 no-underline">
+                        <span>{i + 1}</span>
+                        <span>{item.value}</span>
+                    </a>
+                </div>
+            })}
+        </div>
     </div>
 }
 

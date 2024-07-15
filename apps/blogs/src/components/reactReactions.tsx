@@ -1,9 +1,11 @@
 "use client"
 
 import { CatppuccinContext } from "@/context/catppuccin"
+import { octokit } from "@/lib/octokit"
 import { Issue, Reaction } from "@/types/issues"
 import { faHandsClapping } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { GetResponseDataTypeFromEndpointMethod } from "@octokit/types"
 import { Session } from "next-auth"
 import { useSession } from "next-auth/react"
 import { useContext, useEffect, useState } from "react"
@@ -62,12 +64,11 @@ const reactionsMeta: ReactionMeta[] = [
 
 ]
 
-export default function ReactReactions({ slug }: { slug: string }) {
+export default function ReactReactions({ comment, owner, repo }: { comment: GetResponseDataTypeFromEndpointMethod<typeof octokit.issues.getComment>, owner: string, repo: string }) {
     const catppuccinColor = useContext(CatppuccinContext)
     const [current, setCurrent] = useState<string[]>([])
-    const [reactions, setReactions] = useState<Reactions | null>()
-    const [reactionsData, setReactionsData] = useState<Reaction[] | null>()
-    const [totalReactions, setTotalReactions] = useState<number | null>(null)
+    const [reactions, setReactions] = useState<Reactions | null>(comment.reactions!)
+    const [reactionsData, setReactionsData] = useState<GetResponseDataTypeFromEndpointMethod<typeof octokit.reactions.listForIssueComment> | null>()
     const [open, setOpen] = useState(false)
     const ref = useDetectClickOutside({ onTriggered: () => setOpen(false) });
     const { data: session } = useSession() as { data: Session & { access_token: string, id: number } | null };
@@ -83,8 +84,7 @@ export default function ReactReactions({ slug }: { slug: string }) {
             await fetch("/api/reactions", {
                 method: "DELETE",
                 body: JSON.stringify({
-                    id: found.id,
-                    slug
+                    owner, repo, comment_id: comment.id, reaction_id: found.id
                 })
             }).then(() => {
                 setReactions(prev => prev ? ({ ...prev, [content]: prev[content] - 1, total_count: prev.total_count - 1 }) : prev)
@@ -92,11 +92,11 @@ export default function ReactReactions({ slug }: { slug: string }) {
             })
             setReactionsData(reactionData => reactionData?.filter(r => r.content !== content))
         } else {
-            const resp: Reaction = await fetch("/api/reactions", {
+            const resp: GetResponseDataTypeFromEndpointMethod<typeof octokit.reactions.createForIssueComment> = await fetch("/api/reactions", {
                 method: "POST",
                 body: JSON.stringify({
                     content,
-                    slug
+                    comment_id: comment.id,
                 })
             }).then((res) => {
                 setReactions(prev => prev ? ({ ...prev, [content]: prev[content] + 1, total_count: prev.total_count + 1 }) : prev)
@@ -106,16 +106,13 @@ export default function ReactReactions({ slug }: { slug: string }) {
             setReactionsData(prev => prev ? [...prev, resp] : prev)
         }
     }
-    
+
     useEffect(() => {
         (async function () {
-            const { issuesRes, reactionsRes }: { issuesRes: Issue, reactionsRes: Reaction[] } = await fetch(`/api/reactions/?slug=${slug}`).then(res => res.json())
-            setReactionsData(reactionsRes)
-            const githubUserReactions = reactionsRes.filter(({ user: { id } }) => id === session?.id).map(r => r.content)
+            const data = await fetch(`/api/reactions/?owner=${owner}&repo=${repo}&comment_id=${comment.id}`).then(res => res.json()) as GetResponseDataTypeFromEndpointMethod<typeof octokit.reactions.listForIssueComment>
+            setReactionsData(data!)
+            const githubUserReactions = data.filter(({ user }) => user!.id === session?.id).map(r => r.content)
             setCurrent(githubUserReactions)
-            const { reactions }: { reactions: Reactions & { url: string } } = issuesRes
-            const { url, ...rest } = reactions
-            setReactions(rest as Reactions)
         })()
     }, [session])
 

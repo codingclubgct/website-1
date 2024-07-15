@@ -1,73 +1,26 @@
 import { Issue, Reaction } from "@/types/issues";
 import { Blog, Profile } from "@/types/types";
 import * as yup from "yup";
-import { githubPat, owner, repo, url } from "./constants";
-import { getTimeString } from "./getTimeString";
+import { githubPat, url } from "./constants";
 import { octokit } from "./octokit";
 import { GetResponseDataTypeFromEndpointMethod } from "@octokit/types";
 
 export const getIssueNumberFromString = (slug: string) => slug.match(/\d+/)?.[0];
 
-export async function _getReactions(slug: string) {
-    const issuesRes: Issue = await fetch(`https://api.github.com/repos/${owner}/${repo}/${slug}`, {
-        headers: {
-            "Authorization": `Bearer ${githubPat}`
-        },
-        cache: "no-store"
-    }).then(res => res.json())
-    const reactionsRes: Reaction[] = await fetch(issuesRes.reactions.url, {
-        headers: {
-            "Authorization": `Bearer ${githubPat}`
-        }
-    }).then(res => res.json())
-    return { issuesRes, reactionsRes }
-}
-
-async function getProfileFromUsername(username: string) {
-    const profile = await fetch(`https://api.github.com/users/${username}`, {
-        method: "GET",
-        headers: {
-            "Authorization": `token ${githubPat}`,
-            "Content-Type": "application/json"
-        },
-        cache: "force-cache"
-    }).then(res => res.json())
-    return profile
-}
-
-export async function getIssueNumber(title: string) {
-    const issues: Issue[] = await fetch(`https://api.github.com/repos/${owner}/${repo}/issues`, {
-        headers: {
-            "Accept": "application/vnd.github+json",
-            "Authorization": `Bearer ${githubPat}`,
-        },
-    }).then(res => res.json());
-    const found = issues.find(issue => issue.title === title)
-    if (!found) {
-        const { id } = await fetch("https://api.github.com/user", {
-            method: "GET",
-            headers: {
-                "Authorization": `token ${githubPat}`,
-                "Content-Type": "application/json"
-            }
-        }).then(res => res.json())
-        if (id === 80976002) { // User id of Joel Samuel
-            const resp: Issue = await fetch(`https://api.github.com/repos/${owner}/${repo}/issues`, {
-                method: "POST",
-                headers: {
-                    "Accept": "application/vnd.github+json",
-                    "Authorization": `Bearer ${githubPat}`
-                }, body: JSON.stringify({
-                    title,
-                    body: "Using this space as comment section for the blog post of above pathname",
-                })
-            }).then(res => res.json())
-            return resp.number
-        }
-        return 20
-    }
-    return found.number
-}
+// export async function _getReactions(url: string) {
+//     const issuesRes: Issue = await fetch(`https://api.github.com/repos/${owner}/${repo}/${slug}`, {
+//         headers: {
+//             "Authorization": `Bearer ${githubPat}`
+//         },
+//         cache: "no-store"
+//     }).then(res => res.json())
+//     const reactionsRes: Reaction[] = await fetch(issuesRes.reactions.url, {
+//         headers: {
+//             "Authorization": `Bearer ${githubPat}`
+//         }
+//     }).then(res => res.json())
+//     return { issuesRes, reactionsRes }
+// }
 
 export type GithubDataForBlog = {
     author: {
@@ -84,40 +37,14 @@ export type GithubDataForBlog = {
     }
 }
 
-export async function getGithubDataforBlog(pathname: string): Promise<GithubDataForBlog | undefined> {
-    const filePathName = `apps/blogs/src/blogs/${pathname}.mdx`
-    const apiUrl = `https://api.github.com/repos/${owner}/${repo}/commits?path=${filePathName}`
-    console.log(apiUrl)
-    const resp = await fetch(apiUrl, {
-        method: "GET",
-        headers: {
-            "Authorization": `token ${githubPat}`,
-            "X-GitHub-Api-Version": "2022-11-28"
-        },
-        cache: "force-cache"
-    }).then(res => res.json())
-    if (!resp.length) {
-        console.log(resp)
-        return undefined
-    }
-    const { committer } = resp[0]
-    const { author, commit: initialCommit } = resp[resp.length - 1]
-    const { name, blog, html_url, email } = await getProfileFromUsername(author.login)
-    const { name: committerName } = await getProfileFromUsername(committer.login)
-    return {
-        author: { name, blog, html_url, email, avatar_url: author.avatar_url, date: getTimeString(initialCommit.author.date) },
-        committer: { name: committerName, avatar_url: committer.avatar_url, committed_date: getTimeString(resp[0].commit.committer.date) }
-    }
-}
-
 export const getAllBlogs = async () => {
     const lookup = await fetch(`${url}/data/lookup.json`).then(res => res.json()) as string[]
     const promises = lookup.map(async entry => {
         try {
             const { profile, blogs } = await fetch(`${url}/data/${entry}`).then(res => res.json())
             return blogEntrySchema.validateSync({ profile, blogs })
-        } catch (e) {
-            console.error(e)
+        } catch (error) {
+            console.error({ error })
             return null
         }
     })

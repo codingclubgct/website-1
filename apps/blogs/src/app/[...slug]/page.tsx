@@ -27,7 +27,7 @@ export async function generateStaticParams() {
         if (node.type === 'file') {
             const finalSlug = node.absolutePath.replace("README.md", "")
             return [{
-                slug: [profile.nameSlug, blog.folderSlug, ...finalSlug.split('/')]
+                slug: [profile.nameSlug, blog.folderSlug, ...finalSlug.split('/')].filter(Boolean)
             }];
         } else if (node.type === 'dir') {
             return node.children.flatMap(child => traverse(child, profile, blog, `${parentPath}/${node.name}`));

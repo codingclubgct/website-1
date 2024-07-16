@@ -209,7 +209,7 @@ const fetchMarkdown = async (params: { slug: string[] }, repo: GetResponseDataTy
     const [, , ...rest] = params.slug
 
     const filePath = rest.join("/")
-    const pathToSearch = filePath.endsWith(".md") ? filePath : filePath + "/README.md"
+    const pathToSearch = filePath.endsWith(".md") ? filePath : filePath + "README.md"
 
     try {
         const { data } = await octokit.repos.getContent({

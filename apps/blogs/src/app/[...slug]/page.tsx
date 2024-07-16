@@ -215,7 +215,7 @@ const fetchMarkdown = async (params: { slug: string[] }, repo: GetResponseDataTy
         const { data } = await octokit.repos.getContent({
             owner: repo.owner.login,
             repo: repo.name,
-            path: basePath + pathToSearch
+            path: basePath ? `${basePath}/${pathToSearch}` : pathToSearch
         }) as GetResponseTypeFromEndpointMethod<typeof octokit.repos.getContent>
         if (!Array.isArray(data)) {
             const content = await downloadContent(data.download_url!)

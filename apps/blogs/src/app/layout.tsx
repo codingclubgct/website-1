@@ -8,6 +8,8 @@ import "./tailwind.css";
 import { Metadata } from "next";
 import { headers } from "next/headers";
 import View from "@/components/view";
+import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://blogs.codingclubgct.in"),
@@ -29,8 +31,6 @@ export const metadata: Metadata = {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const headersList = headers()
-
   return (
     <html lang="en" id="__next">
       <body>
@@ -41,6 +41,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <OpenProvider>
                   <View>
                     {children}
+                    <Analytics />
+                    <SpeedInsights />
                   </View>
                 </OpenProvider>
               </CatppuccinProvider>

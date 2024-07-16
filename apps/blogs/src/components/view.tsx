@@ -9,6 +9,7 @@ import { ReactNode } from "react"
 import Accordion, { AccordionLabel } from "./accordion"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Logo } from "./logo"
+import DarkModeSwitcher from "./darkmodeSwitcher"
 
 
 const links = [

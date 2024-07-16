@@ -18,6 +18,8 @@ import Accordion from "@/components/accordion";
 import { ReactNode } from "react";
 import { UserBox } from "@/components/user-box";
 import MobileHeader from "@/components/mobile";
+import { DarkModeSwitch } from "react-toggle-dark-mode";
+import DarkModeSwitcher from "@/components/darkmodeSwitcher";
 
 const components: MDXComponents = {
     pre: Pre,
@@ -85,6 +87,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
     const Chapters = () => {
         return <div className="flex w-[300px] p-4 sticky h-screen top-0 flex-col justify-between">
             <div>
+                <DarkModeSwitcher />
                 <p className="text-xl font-bold py-4">Chapters</p>
                 <Link href={`/${nameSlug}/${folderSlug}`} className="no-underline text-subtext0 hover:bg-surface0 hover:text-text p-2 block">{capitalizeFolderSlug(folderSlug)}</Link>
                 <Navbar node={allFiles} />
